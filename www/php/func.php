@@ -4,12 +4,13 @@
 		global $db;
 		$sql = array();
 		$query = 'WHERE ';
-		
+		$aid = getId('attachment','name',$post['attachment']);
 		$sql[] = ($post['series']) ? $db->parse('series = ?s',$post['series']) : false;
 		$sql[] = ($post['equipment']) ? $db->parse('equipment = ?s',$post['equipment']) : false;
 		$sql[] = ($post['status'] !== Null) ? $db->parse('status = ?i',$post['status']) : false;
 		$sql[] = (intval($post['group']) > 0) ? $db->parse('group_id = ?i',$post['group']) : false;
 		$sql[] = ($post['id'] > 0) ? $db->parse('`list`.id = ?i',$post['id']) : false;
+		$sql[] = ($aid > 0) ? $db->parse('`list`.attachment_id=?i',$aid) : false;
 		if($post['stDate'] && $post['endDate']){
 			switch($post['typeDate']){
 				case 1:

@@ -2,7 +2,7 @@
 function createFrom(){
 	var allShow = document.getElementById('filter').cloneNode(true);
 	allShow.id = 'allShowDiv';
-	var mass = allShow.querySelectorAll('select,input[type="date"],label,img[id="btnPrint"],img[id="btnCreate"]');
+	var mass = allShow.querySelectorAll('select,input[type="date"],label,img[id="btnPrint"],img[id="btnCreate"],input[name="attachment"]');
 	for(var ch in mass ){
 		if( typeof mass[ch] == 'object' && mass[ch].id != "status") allShow.removeChild(mass[ch]);
 		else if(mass[ch].id == "status"){

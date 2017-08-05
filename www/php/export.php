@@ -24,7 +24,6 @@
             <style>table {
                            border-collapse: collapse;
                            width: 100%;
-                           height: 100%;
                            font-size: 1.0em;
                            text-align: center;
                     }
@@ -35,7 +34,7 @@
                     .ext {
                         text-align: right;
                         border-right: hidden;
-                        vertical-align: text-top;
+                        vertical-align: text-bottom;
                     }
                     tr:last-child, tr:nth-last-child(2),tr:nth-last-child(3) {
                         border-bottom: hidden;
@@ -45,6 +44,14 @@
                     }
                     td[colspan]{
                         text-align: left;
+                    }
+                    tr:nth-last-child(4){
+                        height: 50px;
+                        border: hidden;
+                        border-top: black;
+                    }
+                    td {
+                        empty-cells: hide;
                     }
                     
                     @media print {
@@ -56,12 +63,18 @@
                     input {
                         cursor: pointer;
                     }
+                    caption {
+                        padding: 50px;
+                        font-size: 24px;
+                        font-weight: bolder;
+                    }
             </style>";
         echo "<a href='{$_SERVER["HTTP_REFERER"]}'>Вернуться</a> <input type='button' onclick='print();' value='Печать'>";
-        echo "<table border='1'><tr><th>№</th><th>Оборудование</th><th>Серия</th><th>Статус</th></tr>";
+        echo "<table border='1'><caption>Акт приема передачи оборудования</caption><tr><th>№</th><th>Оборудование</th><th>Серия</th><th>Статус</th></tr>";
         foreach ($res as $val){
             echo "<tr><td>".$i++."</td><td>{$val['equipment']}</td><td>{$val['series']}</td><td>".getStatus(intval($val['status']))."</td></tr>";
         }
+        echo "<tr><td colspan='4'></td>";
         echo "<tr><td class='ext'>Принял:</td><td colspan='3'>____________/________________________<br><sup><sub>         (Подпись)                     (ФИО)</sub></sup></td></tr>";
         echo "<tr><td class='ext'>Сдал:</td><td colspan='3'>____________/________________________<br><sup><sub>         (Подпись)                     (ФИО)</sub></sup></td></tr>";
         echo "<tr><td class='ext'>Дата: </td><td colspan='3'>___\"____________\"20__г.</td></tr>";
@@ -79,8 +92,11 @@
 	$writer = new XLSXWriter();
 	$sheet_options = array('autofilter'=>true,'freeze_pane' => array(1, 11));
 	$styles = array('halign'=>'left');
-
-    $writer->writeSheetHeader('Отчет', array('ID номер' => 'string', 'Оборудование' => 'string', 'Тип' => 'string', 'Cтатус' => 'string', 'Заказчик' => 'string', 'Произвел ремонт' => 'string', 'Примечание' => 'string', 'Заявка от' => 'date', 'Выданно' => 'date'), array(), $sheet_options);//optional
+    $isRole = intval($role) > 1;
+    if($isRole)
+        $writer->writeSheetHeader('Отчет', array('ID номер' => 'string', 'Оборудование' => 'string', 'Тип' => 'string', 'Cтатус' => 'string', 'Заказчик' => 'string', 'Произвел ремонт' => 'string', 'Примечание' => 'string', 'Заявка от' => 'date', 'Выданно' => 'date'), array(), $sheet_options);//optional
+    else
+        $writer->writeSheetHeader('Отчет', array('ID номер' => 'string', 'Оборудование' => 'string', 'Тип' => 'string', 'Cтатус' => 'string', 'Заказчик' => 'string','Выданно' => 'date'), array(), $sheet_options);//optional
 
     foreach ($res as $val) {
         $row[] = $val['series'];
@@ -88,9 +104,11 @@
         $row[] = $val['type_equipment'];
         $row[] = getStatus(intval($val['status']));
         $row[] = $val['attachment_name'];
-        $row[] = $val['got'];
-        $row[] = $val['note'];
-        $row[] = formatToEx($val['receipt']);
+        if($isRole) {
+            $row[] = $val['got'];
+            $row[] = $val['note'];
+            $row[] = formatToEx($val['receipt']);
+        }
         $row[] = formatToEx($val['issued']);
         $writer->writeSheetRow('Отчет', $row, $styles);
         unset($row);
