@@ -66,7 +66,7 @@ input[type="button"] {
     border: none;
 }
 
-button, input[type="button"],input[type="submit"],#btnPrint {
+button, input[type="button"],input[type="submit"],#btnPrint, #btnCreate {
     cursor: pointer;
 }
 
@@ -167,6 +167,14 @@ input[type="button"]:hover {
     background: whitesmoke;
 }
 
+.necessarily {
+    color: red;
+}
+
+.necessarily:after {
+    content: "*";
+}
+
 div#message {
     background: #dcecf1;
     display: none;
@@ -197,4 +205,11 @@ div#message {
 .content{
     text-align: center;
     width: auto;
+}
+
+.updateFormUser {
+    top: 65px;
+    left: 300px;
+    width: 300px;
+    z-index: 5000;
 }

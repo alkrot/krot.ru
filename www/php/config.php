@@ -2,7 +2,7 @@
 	session_start();
 	require_once 'safemysql.class.php';
 	$opts = array(
-		'user'    => '',
+		'user'    => 'root',
 		'pass'    => '',
 		'db'      => 'journal',
 		'charset' => 'utf8'

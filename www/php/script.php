@@ -8,7 +8,7 @@
 			case 'request':
 				$field = array('series','equipment','type_equipment','contact','cause');
 				$data = $db->filterArray($_POST,$field);
-				$data['seal'] = ($_POST['seal']) ? true : false;
+				$data['seal'] = ($_POST['seal'] == "sealYes") ? true : false;
 				$data['group_id'] = intval(getId('group','name',$_POST['group']));
 				$data['attachment_id'] = intval(getId('attachment','name',$_POST['attachment']));
 				echo into('list',$data,"Заявка отправлена");
@@ -63,6 +63,20 @@
 				if(intval($_SESSION['user']['role']) < 4) exit;
 				echo deleteTable("users",intval($_POST['id']),"Пользователь удален");
 			break;
+            case  'show_user':
+                if(intval($_SESSION['user']['role']) < 4) exit;
+                echo show_user($_POST['id']);
+            break;
+            case 'update_users':
+                if(intval($_SESSION['user']['role']) < 4) exit;
+                $data = $db->filterArray($_POST,array("login","role"));
+                if(strlen(trim($_POST['password'])) > 0){
+                    $data["password"] = sha1($_POST['password'].sha1($data['login']));
+                }
+                $data["group_id"] = getId('group','name',$_POST['group']);
+                $data["access_group"] = json_encode(explode(',',$_POST["vgroup"]));
+                echo update('users',$data,"Данные изменены",$_POST['user_id']);
+            break;
 			case 'update_group':
 				if(intval($_SESSION['user']['role']) < 4) exit;
 				$data = $db->filterArray($_POST,array("name"));

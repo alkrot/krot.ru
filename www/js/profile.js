@@ -2,7 +2,7 @@
 function createFrom(){
 	var allShow = document.getElementById('filter').cloneNode(true);
 	allShow.id = 'allShowDiv';
-	var mass = allShow.querySelectorAll('select,input[type="date"],label,img[id="btnPrint"]');
+	var mass = allShow.querySelectorAll('select,input[type="date"],label,img[id="btnPrint"],img[id="btnCreate"]');
 	for(var ch in mass ){
 		if( typeof mass[ch] == 'object' && mass[ch].id != "status") allShow.removeChild(mass[ch]);
 		else if(mass[ch].id == "status"){
@@ -11,14 +11,16 @@ function createFrom(){
 	}
 	var inp = allShow.querySelector("input[name='series']");
 	inp.id = 'series';
-	inp.title = 'ID номер';
+	inp.title = 'ID номер (Обязательно)';
 	inp.required = true;
 	inp.setAttribute('onchange','atc(this);');
 	allShow.querySelector('input[type="hidden"]').value = 'update';
 	var btn = allShow.querySelector('input[type="submit"]');
 	btn.value = 'Изменить';
+
+	allShow.querySelector('input[name="equipment"]').title = 'Оборудование (Обязательно)';
 	
-	var cls = "<div style='text-align: right;'><input style='display: inline;' type='button' onclick='allShowClose();' value='Закрыть'></div>";
+	var cls = "<div style='text-align: right;'><input style='display: inline;' type='button' onclick='allShowClose(\"allShow\");' value='Закрыть'></div>";
 	allShow.innerHTML = cls + allShow.innerHTML;
 	var field = [
 					//getInp('equipment','lequipment','Оборудование','','','',true),
@@ -26,8 +28,8 @@ function createFrom(){
 					'Гарантия: ' + getInp('seal','','','checkbox','seal'),
 					getText('cause','Причина'),
 					getInp('attachment','lattachment','Заказчик','','','',true),
-					getInp('address','','Адрес','tel'),
-					getText('contact','Контактное лицо'),
+					getInp('address','','Адрес (Только для таксафонов и ПКД)','tel'),
+					getText('contact','Контактное лицо, номер телефона'),
 					getInp('group','lgroup','Исполнитель','','','disabled',true),
 					getInp('got','lgot','Произвел ремонт'),
 					getText('note','Примечание'),
@@ -61,24 +63,32 @@ document.getElementById('name').innerText = localStorage.user_login;
 document.onkeydown = function(e){
 	if(e.ctrlKey && e.keyCode == 80){
 		exportToXlsx();
-		e.preventDefault();
+        e.preventDefault();
 	}
 };
 
 //Экспорт в Excel
-function exportToXlsx(){
+function exportToXlsx(ext){
 	var frm = document.getElementById('filterForm');
 	var params = buildQueryString(formToObj(frm));
-	location.href = 'http://' + location.host + '/php/export.php?' + params;
+	location.href = 'http://' + location.host + '/php/export.php?' + params + ((ext) ? ("&" +ext) : '');
+}
+
+function printForm() {
+    exportToXlsx("type=print");
 }
 
 //Добавление значения в доступные группы из подсказчика
-document.getElementById('lvgroup').onclick = function(e){
-	var grp = this.options[this.selectedIndex].value;
-	var txt = document.getElementById('vgroup');
-	var res = txt.value.split(',');
-	res[res.length - 1] = grp;
-	txt.value = res.join(',');
+document.getElementById('lvgroup').onclick = function (e) {
+	addGroup(this,'vgroup');
+}
+
+function addGroup(el,id) {
+    var grp = el.options[el.selectedIndex].value;
+    var txt = document.getElementById(id);
+    var res = txt.value.split(',');
+    res[res.length - 1] = grp;
+    txt.value = res.join(',');
 }
 
 //Создание интерфейса исходя из прав доступа
@@ -104,13 +114,34 @@ if(localStorage.user_role > 3){
 	el.setAttribute('type','button');
 	el.setAttribute('onclick',"showRegForm('regform');");
 	el.setAttribute('value','Регестрация пользователя');
-	
+
+	var frm_edit = document.getElementById("regform").querySelector("form").cloneNode(true);
+	frm_edit.querySelector('button[type="submit"]').innerText = "Сохранить";
+	var hide = frm_edit.querySelector('input[type="hidden"]');
+	hide.value = "update_users";
+	var user_id = hide.cloneNode(true);
+	user_id.name = "user_id";
+	user_id.value = "";
+    frm_edit.insertBefore(user_id,frm_edit.lastChild);
+    frm_edit.className = "form hideform updateFormUser";
+	var close = document.createElement("div");
+	close.style.textAlign = "right";
+	close.innerHTML = getLinkBtn("Закрыть","allShowClose('updateFormUser')");
+	frm_edit.insertBefore(close,frm_edit.firstChild);
+	frm_edit.id = "updateFormUser";
+	frm_edit.classList.add("updateFormUser");
+	frm_edit.querySelector("textarea[list='lvgroup']").setAttribute("list","lwgroup");
+    frm_edit.querySelector("textarea[name='vgroup']").id = "wgroup";
+	frm_edit.querySelector("select[id='lvgroup']").id = "lwgroup";
+	frm_edit.querySelector("select[id='lwgroup']").onclick = function (e) { addGroup(this,"wgroup");  };
+
 	var frm = document.getElementById("regform").cloneNode();
 	frm.id = 'user_list';
 	frm.innerHTML = "<div id='users'></div><div class='btnControl'>{0}".format(getLinkBtn('Еще',"showList('users','users')"));
 	
 	var content = document.getElementsByClassName('content')[0];
 	content.insertBefore(frm,content.firstChild);
+	content.insertBefore(frm_edit,content.lastChild);
 	
 	var frm2 = frm.cloneNode(true);
 	frm2.id = 'group_list';
@@ -149,10 +180,10 @@ function cloneBtn(el,val,func){
  }
 
 //Закрытие формы изменения или добавление заявки
-function allShowClose(){
-	document.getElementById('allShow').style.opacity = '0';
-	document.getElementById('allShow').style.zIndex = '-1000';
-	document.getElementById('allShow').reset();
+function allShowClose(id){
+	document.getElementById(id).style.opacity = '0';
+	document.getElementById(id).style.zIndex = '-1000';
+	document.getElementById(id).reset();
 }
 
 //Открытие формы изменения или добавление заявки
@@ -204,7 +235,7 @@ function getText(name,plc){
 
 //Формирование input элементов для формы изменения или добавление заявки
 function getInp(name,list,plc,type,val,off,required){
-	return "<input type='{3}' name = '{0}' id='{0}' list='{1}' placeholder='{2}' title='{2}' value='{4}' oninput='getList(this);' {5} {6}>".format(name,list,plc,type ? type : 'text',val ? val : '',off ? off : '',required ? 'required' : '');
+	return "<input type='{3}' name = '{0}' id='{0}' list='{1}' placeholder='{2}' title='{2} {7}' value='{4}' oninput='getList(this);' {5} {6}>".format(name,list,plc,type ? type : 'text',val ? val : '',off ? off : '',required ? 'required' : '',required ? '(Обязательно)': '');
 }
 
 //выбор показа списка куда выводить инофрмацию, пользователи, отделы или принадлежность
@@ -246,7 +277,7 @@ function showList(listid,type,update){
 			for(var i in data){
 				var div = document.createElement('div');
 				div.id = data[i].id;
-				div.innerHTML = ((data[i].login) ? data[i].login : data[i].name) + getLinkBtn(txt,'del(this,"'+listid+'","'+del+'")');
+				div.innerHTML = "<span onclick='" + ((type == 'show_users') ? "showUpdateForm(this);' style='cursor: pointer;'" : "'") + ">" + ((data[i].login) ? data[i].login : data[i].name) + "</span>" + getLinkBtn(txt,'del(this,"'+listid+'","'+del+'")');
 				frm.appendChild(div);
 			}
 			frm.scrollTop = frm.scrollHeight;
@@ -255,6 +286,27 @@ function showList(listid,type,update){
 		}
 	});
 	
+}
+
+function showUpdateForm(el) {
+	var user_id = el.parentNode.id;
+	var form = document.getElementById("updateFormUser");
+	form.style.display = "block";
+	form.style.opacity = 1;
+	form.style.zIndex = 5000;
+	form.querySelector("input[name='user_id']").value = user_id;
+	ajax_p("script.php","type=show_user&id="+user_id,function (data) {
+
+		form.querySelector("input[name='login']").value = data.login;
+		form.querySelector("input[name='group']").value = data.group;
+		form.querySelector("textarea[id='wgroup']").value = (data['access_group']) ? data['access_group'].join(',') : '';
+		form.querySelector("input[name='role']").value = data.role;
+
+		form.style.display = "block";
+		form.style.opacity = 1;
+		form.style.zIndex = 5000;
+    });
+	return;
 }
 
 //Показ следующих заявок
@@ -293,7 +345,7 @@ function show(iForm,offset){
 					req.style.background = (day >= 35 && day < 45) ? 'rgba(249, 255, 11, 0.21)' : (day >= 45) ? 'rgba(255, 11, 11, 0.21)': '';
 				}
 				req.className = 'form list';
-				req.innerHTML = '<strong>ID номер:</strong> {0}<br><strong>Оборудование:</strong> {1}<br><strong>Тип:</strong> {2}<br><strong>Статус: </strong> {3}<br><strong>От кого:</strong> {4}<br><strong>Произвел ремонт:</strong> {10}<br><strong>Примечание:</strong> {5}<br><sup><strong>Заявка от:</strong> {6} <strong>Начала ремонта:</strong> {7} <strong>Конец ремонта:</strong> {8} <strong>Выданно:</strong> {9} </sup><br>'
+				req.innerHTML = '<strong>ID номер:</strong> {0}<br><strong>Оборудование:</strong> {1}<br><strong>Тип:</strong> {2}<br><strong>Статус: </strong> {3}<br><strong>От кого:</strong> {4}<br><strong>Произвел ремонт:</strong> {8}<br><strong>Примечание:</strong> {5}<br><sup><strong>Заявка от:</strong> {6} <strong>Выданно:</strong> {7} </sup><br>'
 								.format(items.series,
 										items.equipment,
 										items.type_equipment,
@@ -301,8 +353,6 @@ function show(iForm,offset){
 										(items.attachment_name) ? items.attachment_name : 'Неизвестно',
 										items.note,
 										items.receipt,
-										items.start_repair,
-										items.end_repair,
 										items.issued,
 										items.got
 									);
@@ -363,7 +413,7 @@ function getLinkBtn(txt, func){
 function getStatus(stat){
 	switch(Number(stat)){
 		case 1:
-			return 'На расмотрении';
+			return 'В очереди';
 		break;
 		case 2:
 			return 'В ремонте';
@@ -376,6 +426,11 @@ function getStatus(stat){
 		break;
 		case 5:
 			return 'Настроено';
+		break;
+		case 6:
+			return 'Выполнено';
+		case 7:
+			return 'Готово';
 		break;
 		case -1:
 			return 'Отказанно';

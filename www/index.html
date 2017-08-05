@@ -30,49 +30,60 @@
     </div>
     <div class="content">
         <form class="form" onsubmit="send(this); return false;" name='request' method='POST'>
-            <label>ID номер:<br>
+            <label><span class="necessarily"></span> ID номер:<br>
                 <input type="text" name="series" list="lseries" autocomplete="false" onchange="atc(this)" oninput="getList(this);" required>
                 <datalist id="lseries">
                 </datalist>
             </label>
-            <label>Куда:<br>
+            <label><span class="necessarily"></span> Куда:<br>
                 <input type="text" name="group" id="group" list="lgroup" autocomplete="false" oninput="getList(this);" required>
                 <datalist id="lgroup">
                 </datalist>
             </label>
-            <label>Оборудование:<br>
+            <label><span class="necessarily"></span> Оборудование:<br>
                 <input type="text" name="equipment" id="equipment" list="lequipment" autocomplete="false" oninput="getList(this);" required>
                 <datalist id="lequipment">
                 </datalist>
             </label>
-            <label>Тип оборудования:<br>
+            <label><span class="necessarily"></span> Тип оборудования:<br>
                 <input type="text" name="type_equipment" id="type_equipment" list="ltype_equipment" autocomplete="false" oninput="getList(this);" required>
                 <datalist id="ltype_equipment">
                 </datalist>
             </label>
-            <label>На гарантии: <input type="checkbox" name="seal"></label>
-            <label>Причина:<br>
-                <input type="text" name="cause" id="cause" list="lcause" autocomplete="false" oninput="getList(this)" required>
+            <label>
+                <div style="text-align: right; display: inline-block;">
+                    Гарантийное: <br>
+                    Не гарантийное:
+                </div>
+                <div style="text-align: left; display: inline-block;">
+                    <input type="radio" name="seal" value="sealYes"><br>
+                    <input type="radio" name="seal" value="sealNo">
+                </div>
+                <div style="clear: both;"></div>
+                <span class="necessarily"></span> Причина:<br>
+                <input type="text" name="cause" id="cause" list="lcause" autocomplete="false" oninput="getList(this)"
+                       required>
                 <datalist id="lcause"></datalist>
             </label>
-            <label>От кого:<br>
+            <label><span class="necessarily"></span> От кого:<br>
                 <input type="text" name="attachment" id="attachment" list="lattachment" autocomplete="false" oninput="getList(this);" required>
                 <datalist id="lattachment">
                 </datalist>
             </label>
             <label>Адрес:<br>
-                <input type="text" name="address" id="adress" list="laddress" autocomplete="false" placeholder="Необязательно" oninput="getList(this);">
+                <input type="text" name="address" id="adress" list="laddress" autocomplete="false" placeholder="Только для таксофонов и ПКД" title="Только для таксофонов и ПКД" oninput="getList(this);">
                 <datalist id="laddress">
                 </datalist>
             </label>
-            <label>Контактное лицо:<br>
+            <label><span class="necessarily"></span> Контактное лицо, номер телефона:<br>
                 <textarea name="contact" id="contact" cols="22" rows="3" required></textarea>
             </label>
             <input type="hidden" name="type" value="request">
             <input type="submit" value="Отправить">
         </form>
+        <span class="necessarily"></span> - Обязательно для заполнения
     </div>
-    <div id="message">Тест</div>
+    <div id="message"></div>
     <script src="js/index.js"></script>
     <script>
         if(!ajax('autch.php','')['error']){

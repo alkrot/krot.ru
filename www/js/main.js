@@ -82,7 +82,7 @@ function alertJQ(messages) {
 }
 
 function getList(el){
-	var val = (el.id == "vgroup") ? el.value.split(/[\s,]+/) : el.value;
+	var val = (el.id == "vgroup" || el.id == "wgroup") ? el.value.split(/[\s,]+/) : el.value;
 
 	params = 'name=' + el.name + '&val=' + ((typeof val == "object") ? val[val.length - 1] : val);
 	var list_id = el.getAttribute('list');

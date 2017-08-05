@@ -62,25 +62,25 @@
                     <input type="text" name="series" list="lseries" oninput="getList(this);" placeholder="ID номер">
                     <datalist id="lseries">
                     </datalist>
-                    <input type="text" name="equipment" id="equipment" list="lequipment" oninput="getList(this)" placeholder="Оборудование">
+                    <input type="text" name="equipment" id="equipment" list="lequipment" title="Оборудование" oninput="getList(this)" placeholder="Оборудование">
                     <datalist id="lequimpment">
                     </datalist>
                     <select id="status"  name="status" placeholder="Статус">
                         <option disabled> Статус </option>
                         <option value=""> Все </option>
-                        <option value="1"> На рассмотрение </option>
+                        <option value="1"> В очереди </option>
                         <option value="2"> В ремонте </option>
                         <option value="3"> Отремонтировано </option>
                         <option value="4"> Проверено </option>
                         <option value="5"> Настроено </option>
+                        <option value="6">Выполнено</option>
+                        <option value="7">Готово</option>
                         <option value="-1"> Отказанно </option>
                     </select>
                     <select id="typeDate"  name="typeDate">
                         <option disabled> Выбор фильтра даты </option>
                         <option value="0"> Все </option>
                         <option value="1"> Дата заявки </option>
-                        <option value="2"> Начала ремонта </option>
-                        <option value="3"> Конец ремонта </option>
                         <option value="4"> Дата выдачи </option>
                     </select>
                     <label for="stDate" style="display: inline;">Начало</label>
@@ -90,6 +90,7 @@
                     <input type="hidden" name="type" value="show">
                     <input type="submit" value="Показать">
                     <img src="image/excel64x64.png" width="24" alt="Группировка в Excel" title="Группировка в Excel" id="btnPrint" onclick="exportToXlsx();">
+                    <img src="image/reestr.png" width="24" alt="Создать реестр приема передачи" title="Создать реестр приема передачи" id="btnCreate" onclick="printForm();">
                 </div>
             </form>
             <div id="info" class="form">
