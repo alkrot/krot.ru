@@ -21,6 +21,7 @@
             localStorage.user_login = data.login;
             localStorage.user_group_id = data.group_id;
             localStorage.user_access_group = data.access_group;
+            localStorage.user_fullname = data.fullname;
         }
     </script>
 	<META http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -39,6 +40,7 @@
                 <div>
                     <input type="text" name="login" placeholder="Логин"><br>
                     <input type="password" name="password" placeholder="Пароль"><br>
+                    <input type="text" name="fullname" placeholder="ФИО"><br>
                     <input type="text" name="group" oninput='getList(this);' list='lgroup' placeholder="Исполнитель"><br>
                     <textarea name="vgroup" id="vgroup" oninput='getList(this);' list = 'lvgroup' placeholder="Видимые исполнители, через запятую"></textarea>
                     <div>
@@ -53,19 +55,18 @@
             </form>
         </div>
         <datalist id="lgroup"></datalist>
-        <datalist id="lattachment"></datalist>
-        <datalist id="lequipment"></datalist>
         <datalist id="ltype_equipment"></datalist>
+        <datalist id="lattachment"></datalist>
+        <datalist id="lcontact"></datalist>
         <div  id="showcontent">
             <form method="POST" onsubmit="show(this); return false;" id="filterForm">
                 <div class="form" id="filter">
                     <input type="text" name="series" list="lseries" oninput="getList(this);" placeholder="ID номер">
-                    <datalist id="lseries">
-                    </datalist>
-                    <input type="text" name="equipment" id="equipment" list="lequipment" title="Оборудование" oninput="getList(this)" placeholder="Оборудование">
-                    <datalist id="lequimpment">
-                    </datalist>
-                    <input type="text" name="attachment" id="attachment" list="lattachment" title="Заказчик" oninput="getList(this)" placeholder="Заказчик">
+                    <datalist id="lseries"></datalist>
+                    <input type="text" name="equipment" id="equipment" list="lequipment" title="Оборудование" oninput="getList(this);" placeholder="Оборудование">
+                    <datalist id="lequipment"></datalist>
+                    <input type="text" name="attachment" id="attachment" list="lattachment" title="Заказчик" oninput="getList(this);" placeholder="Заказчик">
+                    <input type="text" name="contact" id="contact" list="lcontact" title="Контактное лицо" oninput="getList(this);" placeholder="Контактное лицо">
                     <select id="status"  name="status" placeholder="Статус">
                         <option disabled> Статус </option>
                         <option value=""> Все </option>

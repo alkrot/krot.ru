@@ -37,10 +37,6 @@
 					echo json_encode(array("error"=>"Нет прав"));
 				}
 			break;
-			case 'show_users':
-				if(intval($_SESSION['user']['role']) < 4) exit;
-				echo getListAdmin(array("id","login"),"users",intval($_POST['offset']));
-			break;
 			case 'show_group':
 				if(intval($_SESSION['user']['role']) < 4) exit;
 				echo getListAdmin(array("id","name"),"group",intval($_POST['offset']));
@@ -48,12 +44,12 @@
 			case "add_group":
 				if(intval($_SESSION['user']['role']) < 4) exit;
 				$field = $db->filterArray($_POST,array("name"));
-				echo into('group',$field,'Группа добавлена');
+				echo into('group',$field,'Исполнитель добавлен');
 			break;
 			case 'add_attachment':
 				if(intval($_SESSION['user']['role']) < 4) exit;
 				$field = $db->filterArray($_POST,array("name"));
-				echo into('attachment',$field,'Принадлежность добавлена');
+				echo into('attachment',$field,'Заказчик добавлен');
 			break;
 			case 'show_attachment':
 				if(intval($_SESSION['user']['role']) < 4) exit;
@@ -63,13 +59,17 @@
 				if(intval($_SESSION['user']['role']) < 4) exit;
 				echo deleteTable("users",intval($_POST['id']),"Пользователь удален");
 			break;
+            case 'show_users':
+                if(intval($_SESSION['user']['role']) < 4) exit;
+                echo getListAdmin(array("id","login","fullname"),"users",intval($_POST['offset']));
+            break;
             case  'show_user':
                 if(intval($_SESSION['user']['role']) < 4) exit;
                 echo show_user($_POST['id']);
             break;
             case 'update_users':
                 if(intval($_SESSION['user']['role']) < 4) exit;
-                $data = $db->filterArray($_POST,array("login","role"));
+                $data = $db->filterArray($_POST,array("login","role","fullname"));
                 if(strlen(trim($_POST['password'])) > 0){
                     $data["password"] = sha1($_POST['password'].sha1($data['login']));
                 }

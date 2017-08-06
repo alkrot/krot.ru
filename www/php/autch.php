@@ -20,6 +20,7 @@
 		$_SESSION['user'] = array(
 			'id'=> $data['id'],
 			'login'=> $data['login'],
+			'fullname'=>$data['fullname'],
 			'role'=>$data['role'],
 			'group_id'=>$data['group_id'],
 			'access_group' => json_decode($data['access_group'],true)

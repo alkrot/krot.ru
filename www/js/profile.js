@@ -2,7 +2,7 @@
 function createFrom(){
 	var allShow = document.getElementById('filter').cloneNode(true);
 	allShow.id = 'allShowDiv';
-	var mass = allShow.querySelectorAll('select,input[type="date"],label,img[id="btnPrint"],img[id="btnCreate"],input[name="attachment"]');
+	var mass = allShow.querySelectorAll('select,input[type="date"],label,img[id="btnPrint"],img[id="btnCreate"],input[name="attachment"],input[name="contact"]');
 	for(var ch in mass ){
 		if( typeof mass[ch] == 'object' && mass[ch].id != "status") allShow.removeChild(mass[ch]);
 		else if(mass[ch].id == "status"){
@@ -23,7 +23,6 @@ function createFrom(){
 	var cls = "<div style='text-align: right;'><input style='display: inline;' type='button' onclick='allShowClose(\"allShow\");' value='Закрыть'></div>";
 	allShow.innerHTML = cls + allShow.innerHTML;
 	var field = [
-					//getInp('equipment','lequipment','Оборудование','','','',true),
 					getInp('type_equipment','ltype_equipment','Тип','','','',true),
 					'Гарантия: ' + getInp('seal','','','checkbox','seal'),
 					getText('cause','Причина'),
@@ -53,7 +52,7 @@ function createfield(){
 	el.setAttribute('id','group');
 	el.setAttribute('list','lgroup');
 	el.setAttribute('oninput','getList(this)');
-	el.setAttribute('placeholder','Отдел');
+	el.setAttribute('placeholder','Исполнитель');
 	filter.insertBefore(el,filter.firstChild);
 }
 
@@ -94,6 +93,12 @@ function addGroup(el,id) {
 //Создание интерфейса исходя из прав доступа
 if(localStorage.user_role == 1){
 	createfield();
+	document.querySelector("input[type='submit']").style.display = "none";
+	document.getElementById("filterForm").onsubmit = function () {
+        return false;
+    }
+    document.getElementById("btnCreate").style.display = "none";
+    document.getElementById("info").innerHTML = "Доступные группы:<br>" + localStorage.user_access_group.replace(',','<br>');
 }
 
 if(localStorage.user_role > 1){
@@ -277,7 +282,8 @@ function showList(listid,type,update){
 			for(var i in data){
 				var div = document.createElement('div');
 				div.id = data[i].id;
-				div.innerHTML = "<span onclick='" + ((type == 'show_users') ? "showUpdateForm(this);' style='cursor: pointer;'" : "'") + ">" + ((data[i].login) ? data[i].login : data[i].name) + "</span>" + getLinkBtn(txt,'del(this,"'+listid+'","'+del+'")');
+				div.innerHTML = "<span onclick='" + ((type == 'show_users') ? "showUpdateForm(this);' style='cursor: pointer;' title='" + data[i].fullname + "'" :
+					"'") + ">" + ((data[i].login) ? data[i].login : data[i].name) + "</span>" + getLinkBtn(txt,'del(this,"'+listid+'","'+del+'")');
 				frm.appendChild(div);
 			}
 			frm.scrollTop = frm.scrollHeight;
@@ -298,6 +304,7 @@ function showUpdateForm(el) {
 	ajax_p("script.php","type=show_user&id="+user_id,function (data) {
 
 		form.querySelector("input[name='login']").value = data.login;
+		form.querySelector("input[name='fullname']").value = data.fullname;
 		form.querySelector("input[name='group']").value = data.group;
 		form.querySelector("textarea[id='wgroup']").value = (data['access_group']) ? data['access_group'].join(',') : '';
 		form.querySelector("input[name='role']").value = data.role;
@@ -445,6 +452,7 @@ function getStatus(stat){
 function addLisGA(e){
 	if(e.keyCode == 13){
 		var params = "type=" + this.id + "&name=" + this.value;
+        document.getElementById(this.id).value = "";
 		ajax_p('script.php',params,function(data){
 			if(data.messages){
 				alert(data.messages);

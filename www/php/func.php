@@ -11,6 +11,7 @@
 		$sql[] = (intval($post['group']) > 0) ? $db->parse('group_id = ?i',$post['group']) : false;
 		$sql[] = ($post['id'] > 0) ? $db->parse('`list`.id = ?i',$post['id']) : false;
 		$sql[] = ($aid > 0) ? $db->parse('`list`.attachment_id=?i',$aid) : false;
+		$sql[] = ($post['contact']) ? $db->parse('`list`.contact=?s',$post['contact']) : false;
 		if($post['stDate'] && $post['endDate']){
 			switch($post['typeDate']){
 				case 1:
@@ -95,11 +96,12 @@
 		global $db;
 		$query = $val."%";
 		$res = $db->getAll("SELECT DISTINCT ?n AS name FROM ?n WHERE ?n LIKE ?s LIMIT 5",$col,$table,$col,$query);
-		if($_SESSION['user']['role'] == 1){
+		if($_SESSION['user']['role'] == 1 && $table == "group"){
 			$res = array_filter($res,function($var){
 				$access_group = $_SESSION['user']['access_group'];
 				if(in_array($var['name'],$access_group)) return $var;
 			});
+
 		}
 		if($res) return json_encode($res);
 	}
@@ -142,7 +144,10 @@
 
 	function getListAdmin($col,$table,$offset){
 		global $db;
-		$data = $db->getAll("SELECT ?n,?n FROM ?n ORDER BY id LIMIT ?i,5",$col[0],$col[1],$table,$offset);
+		if($table == "users")
+		    $data = $db->getAll("SELECT ?n,?n,?n FROM ?n ORDER BY id LIMIT ?i,5",$col[0],$col[1],$col[2],$table,$offset);
+		else
+		    $data = $db->getAll("SELECT ?n,?n FROM ?n ORDER BY id LIMIT ?i,5",$col[0],$col[1],$table,$offset);
 		return json_encode($data);
 	}
 	
