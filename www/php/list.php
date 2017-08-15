@@ -3,6 +3,7 @@
 	require_once 'func.php';
 	header('Content-Type: text/html; charset=utf-8', true);
 	$get = $_POST;
+	//Данные для списков из таблиц
 	switch(true){
 		case ($get['name'] == 'group' || $get['name'] == 'vgroup'):
 			echo getList('name','group',$get['val']);

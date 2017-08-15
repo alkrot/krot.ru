@@ -1,3 +1,4 @@
+//get запрос
 function ajax(script,params){
 	var xhr = new XMLHttpRequest();
 	xhr.open('GET', '/php/'+script+'?' + params, false);
@@ -15,6 +16,7 @@ function ajax(script,params){
 	}
 };
 
+//post запрос
 function ajax_p(script,params,callback){
 	var xhr = new XMLHttpRequest();
 	xhr.open('POST','/php/'+script,true);
@@ -34,6 +36,7 @@ function ajax_p(script,params,callback){
 	xhr.send(params);
 }
 
+//Авторизация
 function authentication(){
 	var login = document.getElementsByName('login')[0].value;
 	var pass = document.getElementsByName('pass')[0].value;
@@ -49,6 +52,7 @@ function authentication(){
 	}
 }
 
+//Очистка datalist
 function clearChildren(parent_id){
 	var childArray = document.getElementById(parent_id).children;
 	if (childArray.length > 0) {
@@ -56,7 +60,7 @@ function clearChildren(parent_id){
 		clearChildren(parent_id);
 	}
 };
-
+//Отправка формы
 function send(iForm){
 	var params = buildQueryString(formToObj(iForm));
 	console.log(params);
@@ -74,13 +78,14 @@ function send(iForm){
 	});
 	return false;
 }
-
+//Сообщение о проделенной операции
 function alertJQ(messages) {
     $("#message").html(messages);
 	$("#message").fadeIn(1000);
 	$("#message").fadeOut(2000);
 }
 
+/*Функция вывода автосписка*/
 function getList(el){
 	var val = (el.id == "vgroup" || el.id == "wgroup") ? el.value.split(/[\s,]+/) : el.value;
 
@@ -91,11 +96,14 @@ function getList(el){
 		el.list = document.getElementById(list_id);
 	}
 
-	clearChildren(el.list.id);
+	if(getBrowser().browser != "ie")
+		clearChildren(el.list.id);
+	else
+		clearChildren(list_id);
 
 	ajax_p('list.php',params,function(data){
 		for(var obj in data){
-			el.list.innerHTML += '<option>{0}'.format(data[obj].name);
+			el.list.innerHTML += '<option>{0}'.format((el.id == 'contact') ? data[obj].name.replace(/[^а-яё\s\.]/gi,'') : data[obj].name);
 		}
 	});
 	

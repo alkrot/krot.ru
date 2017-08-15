@@ -70,7 +70,7 @@ document.onkeydown = function(e){
 function exportToXlsx(ext){
 	var frm = document.getElementById('filterForm');
 	var params = buildQueryString(formToObj(frm));
-	location.href = 'http://' + location.host + '/php/export.php?' + params + ((ext) ? ("&" +ext) : '');
+	window.open('http://' + location.host + '/php/export.php?' + params + ((ext) ? ("&" +ext) : ''),"Экспорт");
 }
 
 function printForm() {

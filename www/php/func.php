@@ -1,5 +1,6 @@
 <?
 	header('Content-Type: text/html; charset=utf-8', true);
+	//Показать главнную таблицу с заявками
 	function getTable($post,&$count,$offset=0,$len=5){
 		global $db;
 		$sql = array();
@@ -11,7 +12,7 @@
 		$sql[] = (intval($post['group']) > 0) ? $db->parse('group_id = ?i',$post['group']) : false;
 		$sql[] = ($post['id'] > 0) ? $db->parse('`list`.id = ?i',$post['id']) : false;
 		$sql[] = ($aid > 0) ? $db->parse('`list`.attachment_id=?i',$aid) : false;
-		$sql[] = ($post['contact']) ? $db->parse('`list`.contact=?s',$post['contact']) : false;
+		$sql[] = ($post['contact']) ? $db->parse('`list`.contact LIKE ?s',$post['contact'].'%') : false;
 		if($post['stDate'] && $post['endDate']){
 			switch($post['typeDate']){
 				case 1:
@@ -35,7 +36,8 @@
 		$data = $db->getAll("SELECT `list`.id, `series`,`equipment`,`type_equipment`, `attachment`.name AS attachment_name, `address`, `contact`,`group`.name AS group_name, `got`,`note`, `status`,`receipt`,`issued`,`seal`,`cause` FROM `list` LEFT JOIN `group` ON `group`.id = `list`.group_id  LEFT JOIN `attachment` ON `attachment`.id = `list`.attachment_id ?p ORDER BY `list`.id LIMIT ?i,?i",$query,$offset,$len);
 		return $data;
 	}
-
+	
+	//Показать данные пользователя
 	function show_user($user_id){
 	    global $db;
 	    $data = $db->getAll("SELECT * FROM users WHERE id = ?i",$user_id);
@@ -44,17 +46,20 @@
 	    return json_encode($data[0]);
     }
 
+	//Вернтуь имя поля по id
     function getName($table,$col,$id){
 	    global $db;
 	    $data = $db->getRow("SELECT ?n FROM ?n WHERE id=?i",$col,$table,$id);
 	    return $data["name"];
     }
-
+	
+	//Формарирование sql запроса для фильтра по дате
 	function getQDate($col,$stDate,$endDate){
 		global $db;
 		return $db->parse('DATE(?n) BETWEEN ?s AND ?s',$col,$stDate,$endDate);
 	}
 	
+	//Вставка новый записи
 	function into($table,$data,$messages){
 		global $db;
 		try{
@@ -67,6 +72,7 @@
 		}
 	}
 	
+	//Обновление таблицы по id
 	function update($table,$data,$messages,$id){
 		global $db;
 		$res = $db->query("UPDATE ?n SET ?u WHERE `id` = ?i",$table,$data,intval($id));
@@ -74,6 +80,7 @@
 		return;
 	}
 	
+	//Формирование полей для sql запроса на вставку
 	function getData($post,$role){
 		global $db;
 		$field = array('series','equipment','type_equipment','address','contact','got','status','note','issued','cause');
@@ -86,26 +93,27 @@
 		return $data;
 	}
 	
+	//Для возращение id по полю
 	function getId($table,$filed,$val){
 		global $db;
 		$data = $db->getRow("SELECT * FROM ?n WHERE ?n = ?s",$table,$filed,$val);
 		return $data["id"];
 	}
 	
+	//Данные для подсказчики заполнения datalist
 	function getList($col,$table,$val){
 		global $db;
-		$query = $val."%";
-		$res = $db->getAll("SELECT DISTINCT ?n AS name FROM ?n WHERE ?n LIKE ?s LIMIT 5",$col,$table,$col,$query);
+		$res = $db->getAll("SELECT DISTINCT ?n AS name FROM ?n WHERE ?n LIKE ?s",$col,$table,$col,$val."%");
 		if($_SESSION['user']['role'] == 1 && $table == "group"){
 			$res = array_filter($res,function($var){
 				$access_group = $_SESSION['user']['access_group'];
 				if(in_array($var['name'],$access_group)) return $var;
 			});
-
 		}
 		if($res) return json_encode($res);
 	}
 	
+	//Для словесного отоброжения статуса в excel или акте
 	function getStatus($status){
 		switch($status){
 			case -1:
@@ -135,13 +143,15 @@
 		}
 	}
 	
+	//Форматирование времени для excel
 	function formatToEx($indate){
 		if($indate == '0000-00-00 00:00:00') return;
 		$date = new DateTime($indate);
 		$res = $date->format('YYYY-m-d');
 		return $res;
 	}
-
+	
+	//Вывод списков для администратора Пользователи,Исполнители,Заказчики
 	function getListAdmin($col,$table,$offset){
 		global $db;
 		if($table == "users")
@@ -151,6 +161,7 @@
 		return json_encode($data);
 	}
 	
+	//Удаление из таблицы
 	function deleteTable($table,$id,$msg){
 		global $db;
 		$del = $db->query('DELETE FROM ?n WHERE id = ?i',$table,$id);
