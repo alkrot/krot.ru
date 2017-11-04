@@ -3,7 +3,7 @@ function getListStatus(){
 		var list = document.getElementsByName('status');
 		for(var item in data){
 			addOption(list[0],data[item].status,data[item].id);
-			addOption(list[1],data[item].status,data[item].id);
+			if(list.length > 1) addOption(list[1],data[item].status,data[item].id);
 		}
 	});
 }
@@ -29,6 +29,7 @@ function createFrom(){
 	btn.value = 'Изменить';
 
 	allShow.querySelector('input[name="equipment"]').title = 'Оборудование (Обязательно)';
+	allShow.querySelector('select[name=status]').setAttribute('disabled',true);
 	
 	var cls = "<div style='text-align: right;'><input style='display: inline;' type='button' onclick='allShowClose(\"allShow\");' value='Закрыть'></div>";
 	allShow.innerHTML = cls + allShow.innerHTML;
@@ -102,14 +103,12 @@ function addGroup(el,id) {
 
 function addOption (oListbox, text, value, isDefaultSelected, isSelected)
 {
-	var oOption = document.createElement("option");
-	oOption.appendChild(document.createTextNode(text));
-	oOption.setAttribute("value", value);
-
-	if (isDefaultSelected) oOption.defaultSelected = true;
-	else if (isSelected) oOption.selected = true;
-
-	oListbox.appendChild(oOption);
+		var oOption = document.createElement("option");
+		oOption.appendChild(document.createTextNode(text));
+		oOption.setAttribute("value", value);
+		if (isDefaultSelected) oOption.defaultSelected = true;
+		else if (isSelected) oOption.selected = true;
+		oListbox.appendChild(oOption);
 }
 
 //Создание интерфейса исходя из прав доступа
@@ -209,7 +208,7 @@ function addStatus(){
 			if(data.data.id > 0){
 				var list = document.getElementsByName('status');
 				addOption(list[0],data.data.status,data.data.id);
-				addOption(list[1],data.data.status,data.data.id);
+				if(list.length > 1) addOption(list[1],data.data.status,data.data.id);
 			}
 		});
 	}
@@ -405,7 +404,7 @@ function show(iForm,offset){
 									);
 
 				if(localStorage.user_role > 1) req.innerHTML += getLinkBtn('посмотреть','showForm(this,"look")');
-				if(localStorage.user_role == 4) req.innerHTML += getLinkBtn('удалить','del(this)');
+				if(localStorage.user_role > 2) req.innerHTML += getLinkBtn('удалить','del(this)');
 				table.appendChild(req);
 			}
 			

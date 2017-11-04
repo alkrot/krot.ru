@@ -92,7 +92,6 @@
 				echo update('attachment',$data,'Название изменено',intval($_POST['id']));
 			break;
 			case 'show':
-				
 				$access_group = $_SESSION['user']['access_group'];
 				$post = $_POST;
 				if($role === 4){
@@ -120,7 +119,7 @@
 				echo into('list',$data,'Добавленно');
 			break;
 			case 'delete':
-				if($role === 4){
+				if($role > 2){
 					$id = intval($_POST['id']);
 					$del = $db->query('DELETE FROM list WHERE id = ?i',$id);
 					if($del) echo json_encode(array("messages" => "Удалено"));
