@@ -6,8 +6,8 @@
     <script src="js/vendor/jquery.min.js"></script>
 	<script src="js/vendor/detect.js"></script>
 	<script src="js/vendor/datepicker.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/notify.js"></script>
+    <script src="js/main.js?v=3"></script>
+	<script src="js/notify.js"></script>
     <script src="js/client_socket.js"></script>
 	<!--[if IE]>
 		<script src="js/vendor/html5shiv.min.js"></script>
@@ -75,14 +75,6 @@
                     <select id="status"  name="status" placeholder="Статус">
                         <option disabled> Статус </option>
                         <option value=""> Все </option>
-                        <option value="1"> В очереди </option>
-                        <option value="2"> В ремонте </option>
-                        <option value="3"> Отремонтировано </option>
-                        <option value="4"> Проверено </option>
-                        <option value="5"> Настроено </option>
-                        <option value="6">Выполнено</option>
-                        <option value="7">Готово</option>
-                        <option value="-1"> Отказанно </option>
                     </select>
                     <select id="typeDate"  name="typeDate">
                         <option disabled> Выбор фильтра даты </option>
@@ -116,8 +108,7 @@
         </div>
         <div id="message"></div>
     </div>
-<script src="js/profile.js?v=2"></script>
-<script src="js/notify.js?v=2"></script>
+<script src="js/profile.js?v=3.1"></script>
 <script>
 	if(getBrowser().browser === "firefox" || getBrowser().browser == "ie"){
 		var stD = document.getElementById("stDate");

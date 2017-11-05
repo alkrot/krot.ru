@@ -1,8 +1,17 @@
+function getListStatus(){
+	ajax_p('list.php','name=liststatus',function(data){
+		var list = document.getElementsByName('status');
+		for(var item in data){
+			addOption(list[0],data[item].status,data[item].id);
+			if(list.length > 1) addOption(list[1],data[item].status,data[item].id);
+		}
+	});
+}					 
 //Создание формы добавление или изменения заявки
 function createFrom(){
 	var allShow = document.getElementById('filter').cloneNode(true);
 	allShow.id = 'allShowDiv';
-	var mass = allShow.querySelectorAll('select,input[type="date"],label,img[id="btnPrint"],img[id="btnCreate"],input[name="attachment"],input[type="reset"],input[name="contact"]');
+var mass = allShow.querySelectorAll('select,input[type="date"],label,img[id="btnPrint"],img[id="btnCreate"],input[name="attachment"],input[type="reset"],input[name="contact"],div[id="btnCreate"],div[id="btnPrint"],div[id="btnVolume"]');
 	for(var ch in mass ){
 		if( typeof mass[ch] == 'object' && mass[ch].id != "status") allShow.removeChild(mass[ch]);
 		else if(mass[ch].id == "status"){
@@ -19,6 +28,7 @@ function createFrom(){
 	btn.value = 'Изменить';
 
 	allShow.querySelector('input[name="equipment"]').title = 'Оборудование (Обязательно)';
+	if(localStorage.user_role < 3) allShow.querySelector('select[name=status]').setAttribute('disabled',true);																	 
 	
 	var cls = "<div style='text-align: right;'><input style='display: inline;' type='button' onclick='allShowClose(\"allShow\");' value='Закрыть'></div>";
 	allShow.innerHTML = cls + allShow.innerHTML;
@@ -107,8 +117,18 @@ function addGroup(el,id) {
     txt.value = res.join(',');
 }
 
+function addOption (oListbox, text, value, isDefaultSelected, isSelected)
+{
+		var oOption = document.createElement("option");
+		oOption.appendChild(document.createTextNode(text));
+		oOption.setAttribute("value", value);
+		if (isDefaultSelected) oOption.defaultSelected = true;
+		else if (isSelected) oOption.selected = true;
+		oListbox.appendChild(oOption);
+}
 //Создание интерфейса исходя из прав доступа
 if(localStorage.user_role == 1){
+	getListStatus();									  
 	createfield();
 	document.querySelector("input[type='submit']").style.display = "none";
 	document.getElementById("filterForm").onsubmit = function () {
@@ -119,6 +139,7 @@ if(localStorage.user_role == 1){
 }
 
 if(localStorage.user_role > 1){
+	getListStatus();												  
 	createFrom();
 }
 
@@ -191,8 +212,22 @@ if(localStorage.user_role > 3){
 	cloneBtn(el,"Список пользователей","showRegForm('user_list','users');");
 	cloneBtn(el,"Исполнители","showRegForm('group_list','group');");
 	cloneBtn(el,"Заказчики","showRegForm('attachment_list','attachment');");
+	cloneBtn(el,"Добавить статус","addStatus();");
 }
 
+function addStatus(){
+	var status = prompt("Введите статус для добвления","");
+	if(status.length > 0){
+		ajax_p("script.php","status="+status+"&type=addStatus",function(data){
+			alertJQ(data.messages);
+			if(data.data.id > 0){
+				var list = document.getElementsByName('status');
+				addOption(list[0],data.data.status,data.data.id);
+				if(list.length > 1) addOption(list[1],data.data.status,data.data.id);
+			}
+		});
+	}
+}							   
 //Копирование кнопки и изменене значения и добавление в верхнюю панель
 function cloneBtn(el,val,func){
 	var el_clone = el.cloneNode(true);
@@ -225,7 +260,7 @@ function showForm(el,type){
 				document.getElementById('contact').value = data.items[0].contact;
 				document.getElementById('got').value = data.items[0].got;
 				document.getElementById('note').value = data.items[0].note;
-				document.getElementById('status').value = data.items[0].status;
+				document.getElementById('status').value = data.items[0].status_id;
 				document.getElementById('group').value = data.items[0].group_name;
 				document.getElementById('req_id').value = el_look_id;
 				document.getElementById('issued').value = data.items[0].issued.split(' ')[0];
@@ -373,7 +408,7 @@ function show(iForm,offset){
 								.format(items.series,
 										items.equipment,
 										items.type_equipment,
-										getStatus(items.status),
+										items.status,
 										(items.attachment_name) ? items.attachment_name : 'Неизвестно',
 										items.note,
 										items.receipt,
@@ -382,7 +417,7 @@ function show(iForm,offset){
 									);
 
 				if(localStorage.user_role > 1) req.innerHTML += getLinkBtn('посмотреть','showForm(this,"look")');
-				if(localStorage.user_role == 4) req.innerHTML += getLinkBtn('удалить','del(this)');
+				if(localStorage.user_role > 2) req.innerHTML += getLinkBtn('удалить','del(this)');
 				table.appendChild(req);
 			}
 			
@@ -436,38 +471,6 @@ function del(el,content,type){
 //Измененая кнопка, для разныйфункций
 function getLinkBtn(txt, func){
 	return " <input type='button' onclick="+func+"; value='" + txt + "'>";
-}
-
-//Вывод статуса в текстовый вид
-function getStatus(stat){
-	switch(Number(stat)){
-		case 1:
-			return 'В очереди';
-		break;
-		case 2:
-			return 'В ремонте';
-		break;
-		case 3:
-			return 'Отремонтировано';
-		break;
-		case  4:
-			return 'Проверено';
-		break;
-		case 5:
-			return 'Настроено';
-		break;
-		case 6:
-			return 'Выполнено';
-		case 7:
-			return 'Готово';
-		break;
-		case -1:
-			return 'Отказанно';
-		break;
-		default:
-			return 'Неизвестно';
-		break;
-	}
 }
 
 //Добавление Отдела или группы
