@@ -2,15 +2,18 @@
 <html>
 <head>
     <title>Профиль</title>
-    <script src="js/string.format-1.0.packed.js"></script>
-    <script src="js/jquery.min.js"></script>
+    <script src="js/vendor/string.format-1.0.packed.js"></script>
+    <script src="js/vendor/jquery.min.js"></script>
+	<script src="js/vendor/detect.js"></script>
+	<script src="js/vendor/datepicker.js"></script>
     <script src="js/main.js"></script>
-	<script src="js/detect.js"></script>
-	<script src="js/datepicker.js"></script>
+    <script src="js/notify.js"></script>
+    <script src="js/client_socket.js"></script>
 	<!--[if IE]>
-		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<script src="js/vendor/html5shiv.min.js"></script>
 	<![endif]-->
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=2">
+	<link rel="stylesheet" href="css/sprites/sprites.css">
 	<script>
         data = ajax('autch.php','');
         if(data['error']){
@@ -41,7 +44,7 @@
                     <input type="text" name="login" placeholder="Логин"><br>
                     <input type="password" name="password" placeholder="Пароль"><br>
                     <input type="text" name="fullname" placeholder="ФИО"><br>
-                    <input type="text" name="group" oninput='getList(this);' list='lgroup' placeholder="Исполнитель"><br>
+                    <input type="text" name="group" onmouseenter='getList(this);' list='lgroup' placeholder="Исполнитель"><br>
                     <textarea name="vgroup" id="vgroup" oninput='getList(this);' list = 'lvgroup' placeholder="Видимые исполнители, через запятую"></textarea>
                     <div>
                         <select id="lvgroup">
@@ -58,18 +61,28 @@
         <datalist id="ltype_equipment"></datalist>
         <datalist id="lattachment"></datalist>
         <datalist id="lcontact"></datalist>
+		<datalist id="laddress"></datalist>
+		<datalist id="lgot"></datalist>
         <div  id="showcontent">
             <form method="POST" onsubmit="show(this); return false;" id="filterForm">
                 <div class="form" id="filter">
-                    <input type="text" name="series" list="lseries" oninput="getList(this);" placeholder="ID номер">
+                    <input type="text" name="series" list="lseries" onmouseenter="getList(this);" placeholder="ID номер">
                     <datalist id="lseries"></datalist>
-                    <input type="text" name="equipment" id="equipment" list="lequipment" title="Оборудование" oninput="getList(this);" placeholder="Оборудование">
+                    <input type="text" name="equipment" id="equipment" list="lequipment" title="Оборудование" onmouseenter="getList(this);" placeholder="Оборудование">
                     <datalist id="lequipment"></datalist>
-                    <input type="text" name="attachment" id="attachment" list="lattachment" title="Заказчик" oninput="getList(this);" placeholder="Заказчик">
-                    <input type="text" name="contact" id="contact" list="lcontact" title="Контактное лицо" oninput="getList(this);" placeholder="Контактное лицо">
+                    <input type="text" name="attachment" id="attachment" list="lattachment" title="Заказчик" onmouseenter="getList(this);" placeholder="Заказчик">
+                    <input type="text" name="contact" id="contact" list="lcontact" title="Контактное лицо" onmouseenter="getList(this);" placeholder="Контактное лицо">
                     <select id="status"  name="status" placeholder="Статус">
                         <option disabled> Статус </option>
                         <option value=""> Все </option>
+                        <option value="1"> В очереди </option>
+                        <option value="2"> В ремонте </option>
+                        <option value="3"> Отремонтировано </option>
+                        <option value="4"> Проверено </option>
+                        <option value="5"> Настроено </option>
+                        <option value="6">Выполнено</option>
+                        <option value="7">Готово</option>
+                        <option value="-1"> Отказанно </option>
                     </select>
                     <select id="typeDate"  name="typeDate">
                         <option disabled> Выбор фильтра даты </option>
@@ -83,8 +96,12 @@
                     <input type="date" name="endDate" id="endDate">
                     <input type="hidden" name="type" value="show">
                     <input type="submit" value="Показать">
-                    <img src="image/excel64x64.png" width="24" alt="Группировка в Excel" title="Группировка в Excel" id="btnPrint" onclick="exportToXlsx();">
-                    <img src="image/reestr.png" width="24" alt="Создать реестр приема передачи" title="Создать реестр приема передачи" id="btnCreate" onclick="printForm();">
+					<input type="reset" value="Очистить">
+					<div class="excel" title="Группировка в Excel" id="btnPrint" onclick="exportToXlsx();"></div>
+					<div class="reestr" title="Создать реестр приема передачи" id="btnCreate" onclick="printForm();"></div>
+					<div class="volume_on" title="Звук уведомления включен" id="btnVolume"></div>
+                    <!--<img src="image/excel64x64.png" width="24" alt="Группировка в Excel" title="Группировка в Excel" id="btnPrint" onclick="exportToXlsx();">
+                    <img src="image/reestr.png" width="24" alt="Создать реестр приема передачи" title="Создать реестр приема передачи" id="btnCreate" onclick="printForm();">-->
                 </div>
             </form>
             <div id="info" class="form">
@@ -99,7 +116,8 @@
         </div>
         <div id="message"></div>
     </div>
-<script src="js/profile.js"></script>
+<script src="js/profile.js?v=2"></script>
+<script src="js/notify.js?v=2"></script>
 <script>
 	if(getBrowser().browser === "firefox" || getBrowser().browser == "ie"){
 		var stD = document.getElementById("stDate");

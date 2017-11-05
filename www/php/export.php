@@ -70,9 +70,9 @@
                     }
             </style>";
         echo "<a href='{$_SERVER["HTTP_REFERER"]}'>Вернуться</a> <input type='button' onclick='print();' value='Печать'>";
-        echo "<table border='1'><caption>Акт приема передачи оборудования</caption><col width='10px'><tr><th>№</th><th>Оборудование</th><th>Серия</th><th>Статус</th></tr>";
+        echo "<table border='1'><caption>Акт приема передачи оборудования</caption><col width='10px'><tr><th>№</th><th>Оборудование</th><th>Сер. Зав. Ном.<br>Номер</th><th>Статус</th></tr>";
         foreach ($res as $val){
-            echo "<tr><td>".$i++."</td><td>{$val['equipment']}</td><td>{$val['series']}</td><td>".$val['status']."</td></tr>";
+            echo "<tr><td>".$i++."</td><td>{$val['equipment']}</td><td>{$val['series']}</td><td>".getStatus(intval($val['status']))."</td></tr>";
         }
         echo "<tr><td colspan='4'></td>";
         echo "<tr><td class='ext'>Принял:</td><td colspan='3'>____________/________________________<br><sup><sub>         (Подпись)                     (ФИО)</sub></sup></td></tr>";
@@ -102,7 +102,7 @@
         $row[] = $val['series'];
         $row[] = $val['equipment'];
         $row[] = $val['type_equipment'];
-        $row[] = $val['status'];
+        $row[] = getStatus(intval($val['status']));
         $row[] = $val['attachment_name'];
         if($isRole) {
             $row[] = $val['got'];

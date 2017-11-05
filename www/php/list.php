@@ -29,8 +29,8 @@
         case ($get['name'] == 'contact'):
             echo getList('contact','list',$get['val']);
         break;
-		case ($get['name'] == 'liststatus'):
-			echo getListTable($get['name']);
+		case ($get['name'] == 'got'):
+			echo getList('got','list',$get['val']);
 		break;
 	}
 ?>

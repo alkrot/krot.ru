@@ -1,0 +1,29 @@
+.excel, .reestr, .volume_off, .volume_on{
+	background: url(sprites.png) no-repeat;
+	display: inline-block;
+}
+
+.excel{
+	background-position: -15px -10px ;
+	width: 24px;
+	height: 24px;
+}
+
+.reestr{
+	background-position: -64px -10px ;
+	width: 24px;
+	height: 24px;
+}
+
+.volume_off{
+	background-position: -111px -10px ;
+	width: 24px;
+	height: 24px;
+}
+
+.volume_on{
+	background-position: -162px -10px ;
+	width: 24px;
+	height: 24px;
+}
+

@@ -1,18 +1,8 @@
-function getListStatus(){
-	ajax_p('list.php','name=liststatus',function(data){
-		var list = document.getElementsByName('status');
-		for(var item in data){
-			addOption(list[0],data[item].status,data[item].id);
-			if(list.length > 1) addOption(list[1],data[item].status,data[item].id);
-		}
-	});
-}
-
 //Создание формы добавление или изменения заявки
 function createFrom(){
 	var allShow = document.getElementById('filter').cloneNode(true);
 	allShow.id = 'allShowDiv';
-	var mass = allShow.querySelectorAll('select,input[type="date"],label,img[id="btnPrint"],img[id="btnCreate"],input[name="attachment"],input[name="contact"]');
+	var mass = allShow.querySelectorAll('select,input[type="date"],label,img[id="btnPrint"],img[id="btnCreate"],input[name="attachment"],input[type="reset"],input[name="contact"]');
 	for(var ch in mass ){
 		if( typeof mass[ch] == 'object' && mass[ch].id != "status") allShow.removeChild(mass[ch]);
 		else if(mass[ch].id == "status"){
@@ -29,7 +19,6 @@ function createFrom(){
 	btn.value = 'Изменить';
 
 	allShow.querySelector('input[name="equipment"]').title = 'Оборудование (Обязательно)';
-	allShow.querySelector('select[name=status]').setAttribute('disabled',true);
 	
 	var cls = "<div style='text-align: right;'><input style='display: inline;' type='button' onclick='allShowClose(\"allShow\");' value='Закрыть'></div>";
 	allShow.innerHTML = cls + allShow.innerHTML;
@@ -38,7 +27,7 @@ function createFrom(){
 					'Гарантия: ' + getInp('seal','','','checkbox','seal'),
 					getText('cause','Причина'),
 					getInp('attachment','lattachment','Заказчик','','','',true),
-					getInp('address','','Адрес (Только для таксафонов и ПКД)','tel'),
+					getInp('address','laddress','Адрес (Только для таксафонов и ПКД)','tel'),
 					getText('contact','Контактное лицо, номер телефона'),
 					getInp('group','lgroup','Исполнитель','','','disabled',true),
 					getInp('got','lgot','Произвел ремонт'),
@@ -62,12 +51,29 @@ function createfield(){
 	el.setAttribute('name','group');
 	el.setAttribute('id','group');
 	el.setAttribute('list','lgroup');
-	el.setAttribute('oninput','getList(this)');
+	el.setAttribute('onmouseenter','getList(this)');
 	el.setAttribute('placeholder','Исполнитель');
 	filter.insertBefore(el,filter.firstChild);
 }
 
 document.getElementById('name').innerText = localStorage.user_login;
+
+
+document.getElementById('btnVolume').onclick = function(e){
+	if(localStorage.soundPush == 1){
+		localStorage.soundPush = 0;
+		this.className = "volume_off";
+		this.setAttribute('title',"Звук уведомления выключен");
+	}else{
+		localStorage.soundPush = 1;
+		this.className = "volume_on";
+		this.setAttribute('title','Звук уведомления включен');
+	}
+};
+
+document.getElementById('status').onchange = function(e){
+	localStorage.requestStatus = this.value;
+};
 
 // Экспорт в Excel ctrl+p
 document.onkeydown = function(e){
@@ -101,19 +107,8 @@ function addGroup(el,id) {
     txt.value = res.join(',');
 }
 
-function addOption (oListbox, text, value, isDefaultSelected, isSelected)
-{
-		var oOption = document.createElement("option");
-		oOption.appendChild(document.createTextNode(text));
-		oOption.setAttribute("value", value);
-		if (isDefaultSelected) oOption.defaultSelected = true;
-		else if (isSelected) oOption.selected = true;
-		oListbox.appendChild(oOption);
-}
-
 //Создание интерфейса исходя из прав доступа
 if(localStorage.user_role == 1){
-	getListStatus();
 	createfield();
 	document.querySelector("input[type='submit']").style.display = "none";
 	document.getElementById("filterForm").onsubmit = function () {
@@ -124,7 +119,6 @@ if(localStorage.user_role == 1){
 }
 
 if(localStorage.user_role > 1){
-	getListStatus();
 	createFrom();
 }
 
@@ -197,21 +191,6 @@ if(localStorage.user_role > 3){
 	cloneBtn(el,"Список пользователей","showRegForm('user_list','users');");
 	cloneBtn(el,"Исполнители","showRegForm('group_list','group');");
 	cloneBtn(el,"Заказчики","showRegForm('attachment_list','attachment');");
-	cloneBtn(el,"Добавить статус","addStatus();");
-}
-
-function addStatus(){
-	var status = prompt("Введите статус для добвления","");
-	if(status.length > 0){
-		ajax_p("script.php","status="+status+"&type=addStatus",function(data){
-			alertJQ(data.messages);
-			if(data.data.id > 0){
-				var list = document.getElementsByName('status');
-				addOption(list[0],data.data.status,data.data.id);
-				if(list.length > 1) addOption(list[1],data.data.status,data.data.id);
-			}
-		});
-	}
 }
 
 //Копирование кнопки и изменене значения и добавление в верхнюю панель
@@ -236,7 +215,6 @@ function showForm(el,type){
 		var params = 'type=show&id='+el_look_id;
 		ajax_p('script.php',params,function(data){
 			if(data.items && data.count > 0){
-				console.log(data);
 				document.getElementById('series').value = data.items[0].series;
 				document.getElementById('equipment').value = data.items[0].equipment;
 				document.getElementById('type_equipment').value = data.items[0].type_equipment;
@@ -247,7 +225,7 @@ function showForm(el,type){
 				document.getElementById('contact').value = data.items[0].contact;
 				document.getElementById('got').value = data.items[0].got;
 				document.getElementById('note').value = data.items[0].note;
-				document.getElementById('status').value = data.items[0].status_id;
+				document.getElementById('status').value = data.items[0].status;
 				document.getElementById('group').value = data.items[0].group_name;
 				document.getElementById('req_id').value = el_look_id;
 				document.getElementById('issued').value = data.items[0].issued.split(' ')[0];
@@ -279,7 +257,7 @@ function getText(name,plc){
 
 //Формирование input элементов для формы изменения или добавление заявки
 function getInp(name,list,plc,type,val,off,required){
-	return "<input type='{3}' name = '{0}' id='{0}' list='{1}' placeholder='{2}' title='{2} {7}' value='{4}' oninput='getList(this);' {5} {6}>".format(name,list,plc,type ? type : 'text',val ? val : '',off ? off : '',required ? 'required' : '',required ? '(Обязательно)': '');
+	return "<input type='{3}' name = '{0}' id='{0}' list='{1}' placeholder='{2}' title='{2} {7}' value='{4}' onmouseenter='getList(this);' {5} {6}>".format(name,list,plc,type ? type : 'text',val ? val : '',off ? off : '',required ? 'required' : '',required ? '(Обязательно)': '');
 }
 
 //выбор показа списка куда выводить инофрмацию, пользователи, отделы или принадлежность
@@ -395,7 +373,7 @@ function show(iForm,offset){
 								.format(items.series,
 										items.equipment,
 										items.type_equipment,
-										items.status,
+										getStatus(items.status),
 										(items.attachment_name) ? items.attachment_name : 'Неизвестно',
 										items.note,
 										items.receipt,
@@ -404,7 +382,7 @@ function show(iForm,offset){
 									);
 
 				if(localStorage.user_role > 1) req.innerHTML += getLinkBtn('посмотреть','showForm(this,"look")');
-				if(localStorage.user_role > 2) req.innerHTML += getLinkBtn('удалить','del(this)');
+				if(localStorage.user_role == 4) req.innerHTML += getLinkBtn('удалить','del(this)');
 				table.appendChild(req);
 			}
 			
@@ -416,7 +394,12 @@ function show(iForm,offset){
 			document.getElementById('showCount').innerText = document.getElementById('data').querySelectorAll('div').length;
 			if(offset > 0) table.scrollTop = table.scrollHeight;
 		}else{
-			alertJQ("Показать нечего");
+			if(!offset){
+				alertJQ("Показать нечего");
+				table.innerHTML = '';
+			}else {
+				alertJQ("Данные полностью показаны");
+			}
 		}
 	});
 }
@@ -444,7 +427,7 @@ function del(el,content,type){
 		if(data.messages){
 			if(val == null) document.getElementById(content).removeChild(div);
 			else el.parentNode.innerHTML = el.parentNode.innerHTML.replace(el.parentNode.innerText,val);
-			alert(data.messages);
+			alertJQ(data.messages);
 		}else{
 			alert("фиг знает");
 		}
@@ -453,6 +436,38 @@ function del(el,content,type){
 //Измененая кнопка, для разныйфункций
 function getLinkBtn(txt, func){
 	return " <input type='button' onclick="+func+"; value='" + txt + "'>";
+}
+
+//Вывод статуса в текстовый вид
+function getStatus(stat){
+	switch(Number(stat)){
+		case 1:
+			return 'В очереди';
+		break;
+		case 2:
+			return 'В ремонте';
+		break;
+		case 3:
+			return 'Отремонтировано';
+		break;
+		case  4:
+			return 'Проверено';
+		break;
+		case 5:
+			return 'Настроено';
+		break;
+		case 6:
+			return 'Выполнено';
+		case 7:
+			return 'Готово';
+		break;
+		case -1:
+			return 'Отказанно';
+		break;
+		default:
+			return 'Неизвестно';
+		break;
+	}
 }
 
 //Добавление Отдела или группы

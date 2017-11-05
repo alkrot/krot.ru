@@ -5,12 +5,13 @@
     <title>Прием оборудования на ремонт</title>
 	<link href="image/icon.ico" rel="shortcut icon" type="image/x-icon" />
     <link rel="stylesheet" href="css/style.css">
-	<script src="js/detect.js"></script>
-    <script src="js/jquery.min.js"></script>
-    <script src="js/string.format-1.0.packed.js"></script>
+	<script src="js/vendor/detect.js"></script>
+    <script src="js/vendor/jquery.min.js"></script>
+    <script src="js/vendor/string.format-1.0.packed.js"></script>
+    <script src="js/client_socket.js"></script>
     <script src="js/main.js"></script>
 	<!--[if IE]>
-		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<script src="js/vendor/html5shiv.min.js"></script>
 	<![endif]-->
 </head>
 <body>
@@ -30,24 +31,27 @@
             </form>
     </div>
     <div class="content">
-        <form class="form" onsubmit="send(this); return false;" name='request' method='POST'>
+        <div class="form group_info">
+            <p><b>Исполнители</b></p>
+        </div>
+        <form class="form" onsubmit="send(this); sendSocket(); return false;" name='request' method='POST'>
             <label><span class="necessarily"></span> ID номер:<br>
-                <input type="text" name="series" list="lseries" autocomplete="false" onchange="atc(this)" oninput="getList(this);" required>
+                <input type="text" name="series" list="lseries" autocomplete="false" onchange="atc(this)" onmouseenter="getList(this);" required>
                 <datalist id="lseries">
                 </datalist>
             </label>
             <label><span class="necessarily"></span> Куда:<br>
-                <input type="text" name="group" id="group" list="lgroup" autocomplete="false" oninput="getList(this);" required>
+                <input type="text" name="group" id="group" list="lgroup" autocomplete="false" onchange="clickList(this);" onmouseenter="getList(this);" required>
                 <datalist id="lgroup">
                 </datalist>
             </label>
             <label><span class="necessarily"></span> Оборудование:<br>
-                <input type="text" name="equipment" id="equipment" list="lequipment" autocomplete="false" oninput="getList(this);" required>
+                <input type="text" name="equipment" id="equipment" list="lequipment" autocomplete="false" onmouseenter="getList(this);" required>
                 <datalist id="lequipment">
                 </datalist>
             </label>
             <label><span class="necessarily"></span> Тип оборудования:<br>
-                <input type="text" name="type_equipment" id="type_equipment" list="ltype_equipment" autocomplete="false" oninput="getList(this);" required>
+                <input type="text" name="type_equipment" id="type_equipment" list="ltype_equipment" autocomplete="false" onmouseenter="getList(this);" required>
                 <datalist id="ltype_equipment">
                 </datalist>
             </label>
@@ -62,17 +66,17 @@
                 </div>
                 <div style="clear: both;"></div>
                 <span class="necessarily"></span> Причина:<br>
-                <input type="text" name="cause" id="cause" list="lcause" autocomplete="false" oninput="getList(this)"
+                <input type="text" name="cause" id="cause" list="lcause" autocomplete="false" onmouseenter="getList(this)"
                        required>
                 <datalist id="lcause"></datalist>
             </label>
             <label><span class="necessarily"></span> От кого:<br>
-                <input type="text" name="attachment" id="attachment" list="lattachment" autocomplete="false" oninput="getList(this);" required>
+                <input type="text" name="attachment" id="attachment" list="lattachment" autocomplete="false" onmouseenter="getList(this);" required>
                 <datalist id="lattachment">
                 </datalist>
             </label>
             <label>Адрес:<br>
-                <input type="text" name="address" id="adress" list="laddress" autocomplete="false" placeholder="Только для таксофонов и ПКД" title="Только для таксофонов и ПКД" oninput="getList(this);">
+                <input type="text" name="address" id="adress" list="laddress" autocomplete="false" placeholder="Только для таксофонов и ПКД" title="Только для таксофонов и ПКД" onmouseenter="getList(this);">
                 <datalist id="laddress">
                 </datalist>
             </label>
@@ -94,6 +98,9 @@
             el.href = location.href + 'profile.html';
             document.getElementsByClassName('nav')[0].appendChild(el);
         }
+
+        getGroup(document.getElementsByClassName("group_info")[0]);
+
     </script>
 </body>
 </html>

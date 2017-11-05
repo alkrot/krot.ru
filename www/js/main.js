@@ -103,10 +103,34 @@ function getList(el){
 
 	ajax_p('list.php',params,function(data){
 		for(var obj in data){
-			el.list.innerHTML += '<option>{0}'.format((el.id == 'contact') ? data[obj].name.replace(/[^а-яё\s\.]/gi,'') : data[obj].name);
+			el.list.innerHTML += '<option value="{0}" uid="{1}">{0}'.format((el.id == 'contact') ? data[obj].name.replace(/[^а-яё\s\.]/gi,'') : data[obj].name,data[obj].id);
+		}
+		if(el.name.indexOf('group') >= 0){
+            localStorage.send_group_id = data[0].id;
 		}
 	});
 	
+}
+
+function getGroup(el) {
+	ajax_p('list.php','name=group&val=',function (data) {
+		for(var obj in data){
+			el.innerHTML += data[obj].name +"<br>";
+		}
+    })
+}
+
+function clickList(el){
+	var val = el.value;
+    var opts = document.getElementById('lgroup').childNodes;
+    for (var i = 0; i < opts.length; i++) {
+      if (opts[i].value === val) {
+        // An item was selected from the list!
+        // yourCallbackHere()
+        localStorage.send_group_id = opts[i].getAttribute("uid");
+        break;
+      }
+    }
 }
 
 //Подстановка значений из базы по номеру
@@ -120,6 +144,7 @@ function atc(e){
 			document.getElementById('attachment').value = data.items[0].attachment_name;
 			document.getElementById('cause').value = data.items[0].cause;
 			document.getElementById('contact').value = data.items[0].contact;
+			localStorage.send_group_id = data.items[0].group_id;
 		}
 	});
 }

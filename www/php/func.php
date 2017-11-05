@@ -8,7 +8,7 @@
 		$aid = getId('attachment','name',$post['attachment']);
 		$sql[] = ($post['series']) ? $db->parse('series = ?s',$post['series']) : false;
 		$sql[] = ($post['equipment']) ? $db->parse('equipment = ?s',$post['equipment']) : false;
-		$sql[] = ($post['status'] !== Null) ? $db->parse('status_id = ?i',$post['status']) : false;
+		$sql[] = ($post['status'] !== Null) ? $db->parse('status = ?i',$post['status']) : false;
 		$sql[] = (intval($post['group']) > 0) ? $db->parse('group_id = ?i',$post['group']) : false;
 		$sql[] = ($post['id'] > 0) ? $db->parse('`list`.id = ?i',$post['id']) : false;
 		$sql[] = ($aid > 0) ? $db->parse('`list`.attachment_id=?i',$aid) : false;
@@ -33,7 +33,7 @@
 		if(count($sql) > 0) $query .= implode(' AND ',$sql);
 		else $query = '';
 		$count = $db->getRow("SELECT COUNT(*) AS count FROM list ?p",$query);
-		$data = $db->getAll("SELECT `list`.id,`list`.status_id,`series`,`equipment`,`type_equipment`, `attachment`.name AS attachment_name, `address`, `contact`,`group`.name AS group_name, `got`,`note`, `status`,`receipt`,`issued`,`seal`,`cause` FROM `list` LEFT JOIN `group` ON `group`.id = `list`.group_id  LEFT JOIN `attachment` ON `attachment`.id = `list`.attachment_id LEFT JOIN `liststatus` ON `list`.status_id = `liststatus`.id ?p ORDER BY `list`.id LIMIT ?i,?i",$query,$offset,$len);
+		$data = $db->getAll("SELECT `list`.id, `series`,`equipment`,`type_equipment`, `attachment`.name AS attachment_name, `address`, `contact`,`group`.id AS group_id,`group`.name AS group_name, `got`,`note`, `status`,`receipt`,`issued`,`seal`,`cause` FROM `list` LEFT JOIN `group` ON `group`.id = `list`.group_id  LEFT JOIN `attachment` ON `attachment`.id = `list`.attachment_id ?p ORDER BY `list`.id LIMIT ?i,?i",$query,$offset,$len);
 		return $data;
 	}
 	
@@ -64,8 +64,7 @@
 		global $db;
 		try{
 			$res = $db->query("INSERT INTO ?n SET ?u",$table,$data);
-			$datares = $db->getRow("SELECT * FROM ?n ORDER BY id DESC LIMIT 1",$table);
-			if($res) return json_encode(array("messages"=>$messages,"data"=>$datares));
+			if($res) return json_encode(array("messages"=>$messages));
 			return;
 		}catch(\Exception $er){
 			if(strpos($er->getMessage(),'Duplicate entry') >= 0)
@@ -84,9 +83,8 @@
 	//Формирование полей для sql запроса на вставку
 	function getData($post,$role){
 		global $db;
-		$field = array('series','equipment','type_equipment','address','contact','got','note','issued','cause');
+		$field = array('series','equipment','type_equipment','address','contact','got','status','note','issued','cause');
 		$data = $db->filterArray($post,$field);
-		$data['status_id'] = intval($_POST['status']);
 		$data['attachment_id'] = intval(getId('attachment','name',$post['attachment']));
 		$data['seal'] = ($post['seal']) ? true : false;
 		$getid = array('id'=>$post['req_id']);
@@ -102,16 +100,10 @@
 		return $data["id"];
 	}
 	
-	function getListTable($table){
-		global $db;
-		$data = $db->getAll("SELECT * FROM ?n",$table);
-		if($data) return json_encode($data);
-	}
-	
 	//Данные для подсказчики заполнения datalist
 	function getList($col,$table,$val){
 		global $db;
-		$res = $db->getAll("SELECT DISTINCT ?n AS name FROM ?n WHERE ?n LIKE ?s",$col,$table,$col,$val."%");
+		$res = $db->getAll("SELECT DISTINCT ?n AS name".($table == 'group' ? ',id' : '')." FROM ?n WHERE ?n LIKE ?s",$col,$table,$col,$val."%");
 		if($_SESSION['user']['role'] == 1 && $table == "group"){
 			$res = array_filter($res,function($var){
 				$access_group = $_SESSION['user']['access_group'];
@@ -119,6 +111,36 @@
 			});
 		}
 		if($res) return json_encode($res);
+	}
+	
+	//Для словесного отоброжения статуса в excel или акте
+	function getStatus($status){
+		switch($status){
+			case -1:
+				return 'Отказанно';
+			break;
+			case 1:
+				return 'В очереди';
+			break;
+			case 2:
+				return 'В ремонте';
+			break;
+			case 3:
+				return 'Отремонтировано';
+			break;
+            case 4:
+                return 'Проверенно';
+            break;
+            case 5:
+                return 'Настроено';
+            break;
+            case  6:
+                return 'Выполнено';
+            break;
+            case 7:
+                return 'Готово';
+            break;
+		}
 	}
 	
 	//Форматирование времени для excel
