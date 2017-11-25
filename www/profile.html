@@ -78,8 +78,6 @@
                     </select>
                     <select id="typeDate"  name="typeDate">
                         <option disabled> Выбор фильтра даты </option>
-                        <option value="0"> Все </option>
-                        <option value="1"> Дата заявки </option>
                         <option value="4"> Дата выдачи </option>
                     </select>
                     <label for="stDate" style="display: inline;">Начало</label>
@@ -108,7 +106,7 @@
         </div>
         <div id="message"></div>
     </div>
-<script src="js/profile.js?v=3.1"></script>
+<script src="js/profile.js?v=3.5"></script>
 <script>
 	if(getBrowser().browser === "firefox" || getBrowser().browser == "ie"){
 		var stD = document.getElementById("stDate");

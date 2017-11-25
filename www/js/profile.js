@@ -42,6 +42,7 @@ var mass = allShow.querySelectorAll('select,input[type="date"],label,img[id="btn
 					getInp('group','lgroup','Исполнитель','','','disabled',true),
 					getInp('got','lgot','Произвел ремонт'),
 					getText('note','Примечание'),
+					'<br>Дата ремонта:' + getInp('repairs','','Дата ремонта','date'),																		
 					'<br>Дата выдачи:' + getInp('issued','','Дата выдачи','date'),
 					getInp('req_id','','','hidden')
 				];
@@ -141,6 +142,10 @@ if(localStorage.user_role == 1){
 if(localStorage.user_role > 1){
 	getListStatus();												  
 	createFrom();
+	var list = document.getElementById('typeDate');
+	addOption(list,'Дата заявки',1);
+	addOption(list,'Дата ремонта',2);
+	addOption(list,'Все',0,true,true);											
 }
 
 if(localStorage.user_role > 2){
@@ -264,6 +269,7 @@ function showForm(el,type){
 				document.getElementById('group').value = data.items[0].group_name;
 				document.getElementById('req_id').value = el_look_id;
 				document.getElementById('issued').value = data.items[0].issued.split(' ')[0];
+				document.getElementById('repairs').value = data.items[0].repairs.split(' ')[0];																											
 			}
 		});
 		replceForm('Изменить','update');
@@ -404,7 +410,7 @@ function show(iForm,offset){
 					req.style.background = (day >= 35 && day < 45) ? 'rgba(249, 255, 11, 0.21)' : (day >= 45) ? 'rgba(255, 11, 11, 0.21)': '';
 				}
 				req.className = 'form list';
-				req.innerHTML = '<strong>ID номер:</strong> {0}<br><strong>Оборудование:</strong> {1}<br><strong>Тип:</strong> {2}<br><strong>Статус: </strong> {3}<br><strong>От кого:</strong> {4}<br><strong>Произвел ремонт:</strong> {8}<br><strong>Примечание:</strong> {5}<br><sup><strong>Заявка от:</strong> {6} <strong>Выданно:</strong> {7} </sup><br>'
+				req.innerHTML = '<strong>ID номер:</strong> {0}<br><strong>Оборудование:</strong> {1}<br><strong>Тип:</strong> {2}<br><strong>Статус: </strong> {3}<br><strong>От кого:</strong> {4}<br><strong>Произвел ремонт:</strong> {8}<br><strong>Примечание:</strong> {5}<br><sup><strong>Заявка от:</strong> {6} <strong>Ремонт:</strong> {7} <strong>Выданно:</strong> {8} </sup><br>'
 								.format(items.series,
 										items.equipment,
 										items.type_equipment,
@@ -412,6 +418,7 @@ function show(iForm,offset){
 										(items.attachment_name) ? items.attachment_name : 'Неизвестно',
 										items.note,
 										items.receipt,
+										items.repairs,
 										items.issued,
 										items.got
 									);
@@ -468,7 +475,7 @@ function del(el,content,type){
 		}
 	});
 }
-//Измененая кнопка, для разныйфункций
+//Измененая кнопка, для разных функций
 function getLinkBtn(txt, func){
 	return " <input type='button' onclick="+func+"; value='" + txt + "'>";
 }

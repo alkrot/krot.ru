@@ -94,7 +94,7 @@
 	$styles = array('halign'=>'left');
     $isRole = intval($role) > 1;
     if($isRole)
-        $writer->writeSheetHeader('Отчет', array('ID номер' => 'string', 'Оборудование' => 'string', 'Тип' => 'string', 'Cтатус' => 'string', 'Заказчик' => 'string', 'Произвел ремонт' => 'string', 'Примечание' => 'string', 'Заявка от' => 'date', 'Выданно' => 'date'), array(), $sheet_options);//optional
+        $writer->writeSheetHeader('Отчет', array('ID номер' => 'string', 'Оборудование' => 'string', 'Тип' => 'string', 'Cтатус' => 'string', 'Заказчик' => 'string', 'Произвел ремонт' => 'string', 'Примечание' => 'string', 'Заявка от' => 'date','Ремонт'=>'date', 'Выданно' => 'date'), array(), $sheet_options);//optional
     else
         $writer->writeSheetHeader('Отчет', array('ID номер' => 'string', 'Оборудование' => 'string', 'Тип' => 'string', 'Cтатус' => 'string', 'Заказчик' => 'string','Выданно' => 'date'), array(), $sheet_options);//optional
 
@@ -108,6 +108,7 @@
             $row[] = $val['got'];
             $row[] = $val['note'];
             $row[] = formatToEx($val['receipt']);
+			$row[] = formatToEx($val['repairs']);
         }
         $row[] = formatToEx($val['issued']);
         $writer->writeSheetRow('Отчет', $row, $styles);

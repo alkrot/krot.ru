@@ -18,11 +18,15 @@
 				case 1:
 					$sql[] = getQDate('receipt',$post['stDate'],$post['endDate']);
 				break;
+				case 2:
+					$sql[] = getQDate('repairs',$post['stDate'],$post['endDate']);
+				break;
 				case 4:
 					$sql[] = getQDate('issued',$post['stDate'],$post['endDate']);
 				break;
 				default:
 					$d[] = getQDate('receipt',$post['stDate'],$post['endDate']);
+					$d[] = getQDate('repairs',$post['stDate'],$post['endDate']);
 					$d[] = getQDate('issued',$post['stDate'],$post['endDate']);
 					$sql[] = '('.implode(' OR ',$d).')';
 				break;
@@ -33,7 +37,7 @@
 		if(count($sql) > 0) $query .= implode(' AND ',$sql);
 		else $query = '';
 		$count = $db->getRow("SELECT COUNT(*) AS count FROM list ?p",$query);
-		$data = $db->getAll("SELECT `list`.id,`list`.status_id,`series`,`equipment`,`type_equipment`, `attachment`.name AS attachment_name, `address`, `contact`,`group`.name AS group_name, `got`,`note`, `status`,`receipt`,`issued`,`seal`,`cause` FROM `list` LEFT JOIN `group` ON `group`.id = `list`.group_id  LEFT JOIN `attachment` ON `attachment`.id = `list`.attachment_id LEFT JOIN `liststatus` ON `list`.status_id = `liststatus`.id ?p ORDER BY `list`.id LIMIT ?i,?i",$query,$offset,$len);
+		$data = $db->getAll("SELECT `list`.id,`list`.status_id,`series`,`equipment`,`type_equipment`, `attachment`.name AS attachment_name, `address`, `contact`,`group`.name AS group_name, `got`,`note`, `status`,`receipt`,`repairs`,`issued`,`seal`,`cause` FROM `list` LEFT JOIN `group` ON `group`.id = `list`.group_id  LEFT JOIN `attachment` ON `attachment`.id = `list`.attachment_id LEFT JOIN `liststatus` ON `list`.status_id = `liststatus`.id ?p ORDER BY `list`.id LIMIT ?i,?i",$query,$offset,$len);
 		return $data;
 	}
 	
@@ -84,7 +88,7 @@
 	//Формирование полей для sql запроса на вставку
 	function getData($post,$role){
 		global $db;
-		$field = array('series','equipment','type_equipment','address','contact','got','note','issued','cause');
+		$field = array('series','equipment','type_equipment','address','contact','got','note','repairs','issued','cause');
 		$data = $db->filterArray($post,$field);
 		$data['status_id'] = intval($_POST['status']);
 		$data['attachment_id'] = intval(getId('attachment','name',$post['attachment']));
