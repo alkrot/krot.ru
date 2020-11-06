@@ -1,0 +1,5 @@
+{
+    "php.validate.executablePath": "D:/site/openserver/modules/php/PHP_7.1/php.exe",
+    "php.executablePath": "D:/site/openserver/modules/php/PHP_7.1/php.exe",
+    "php.suggest.basic": false
+}

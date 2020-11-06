@@ -1,0 +1,8 @@
+#Игнорировать sql
+*.sql
+
+#Игнорировать config
+config.php
+
+.idea
+.vscode
