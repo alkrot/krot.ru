@@ -5,7 +5,7 @@
 config.php
 
 #idea
-idea
+.idea
 
 #visual studio
-vscode
+.vscode
