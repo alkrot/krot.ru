@@ -4,5 +4,8 @@
 #Игнорировать config
 config.php
 
-.idea
-.vscode
+#idea
+idea
+
+#visual studio
+vscode
