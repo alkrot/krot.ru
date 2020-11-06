@@ -1,0 +1,118 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Прием оборудования на ремонт</title>
+	<link href="image/icon.ico" rel="shortcut icon" type="image/x-icon" />
+    <link rel="stylesheet" href="css/style.css">
+	<script src="js/vendor/detect.js"></script>
+    <script src="js/vendor/jquery.min.js"></script>
+    <script src="js/vendor/string.format-1.0.packed.js"></script>
+	<script src="js/notify.js?v=1.0"></script>
+    <script src="js/client_socket.js?v=1.0"></script>
+    <script src="js/main.js?v=3.8"></script>
+	<!--[if IE]>
+		<script src="js/vendor/html5shiv.min.js"></script>
+	<![endif]-->
+</head>
+<body>
+    <div class="nav">
+        <div id="title">Прием оборудования на ремонт</div>
+        <button id="autch">Авторизация</button>
+    </div>
+    <div class="autchForm form">
+            <form onsubmit="authentication(); return false;">
+                <label>Логин:<br>
+                    <input type="text" name="login">
+                </label>
+                <label>Пароль:<br>
+                    <input type="password" name="pass">
+                </label>
+                <button onclick="submit">Войти</button>
+            </form>
+    </div>
+    <div class="content">
+        <div class="form group_info">
+            <p><b>Исполнители</b></p>
+        </div>
+        <form class="form" onsubmit="send(this); sendSocket(); return false;" name='request' method='POST'>
+            <label><span class="necessarily"></span> ID номер:<br>
+                <input type="text" name="series" list="lseries" autocomplete="false" onchange="atc(this)" onkeypress="getList(this);" required>
+                <datalist id="lseries">
+                </datalist>
+            </label>
+            <label><span class="necessarily"></span> Куда:<br>
+                <select type="text" name="group" id="group" onblur="clickList(this);" required>
+					<option disabled>Группа</option>
+				</select>
+                <datalist id="lgroup">
+                </datalist>
+            </label>
+            <label><span class="necessarily"></span> Оборудование:<br>
+                <select type="text" name="equipment" id="equipment" required>
+					<option disabled> Оборудование </option>
+				</select>
+                <datalist id="lequipment">
+                </datalist>
+            </label>
+            <label><span class="necessarily"></span> Тип оборудования:<br>
+                <select type="text" name="type_equipment" id="type_equipment" required>
+					<option disabled> Тип оборудования </option>
+				</select>
+                <datalist id="ltype_equipment">
+                </datalist>
+            </label>
+            <label>
+                <div style="text-align: right; display: inline-block;">
+                    Гарантийное: <br>
+                    Не гарантийное:
+                </div>
+                <div style="text-align: left; display: inline-block;">
+                    <input type="radio" name="seal" value="sealYes"><br>
+                    <input type="radio" name="seal" value="sealNo">
+                </div>
+                <div style="clear: both;"></div>
+                <span class="necessarily"></span> Причина:<br>
+                <input type="text" name="cause" id="cause" list="lcause" autocomplete="false" onkeypress="getList(this)"
+                       required>
+                <datalist id="lcause"></datalist>
+            </label>
+            <label><span class="necessarily"></span> От кого:<br>
+                <select type="text" name="attachment" id="attachment" required>
+					<option disabled>От кого</option>
+				</select>
+                <datalist id="lattachment">
+                </datalist>
+            </label>
+            <label>Адрес:<br>
+                <input type="text" name="address" id="adress" list="laddress" autocomplete="false" onkeypress="getList(this);">
+                <datalist id="laddress">
+                </datalist>
+            </label>
+            <label><span class="necessarily"></span> Контактное лицо, номер телефона:<br>
+                <textarea name="contact" id="contact" cols="22" rows="3" required></textarea>
+            </label>
+            <input type="hidden" name="type" value="request">
+            <input type="submit" value="Отправить">
+        </form>
+        <span class="necessarily"></span> - Обязательно для заполнения
+    </div>
+    <div id="message"></div>
+    <script src="js/index.js?v=0.3"></script>
+    <script>
+        if(!ajax('autch.php','')['error']){
+            document.getElementById('autch').style.display = 'none';
+            var el = document.createElement('a');
+            el.innerText = 'Профиль';
+            el.href = location.href + 'profile.html';
+            document.getElementsByClassName('nav')[0].appendChild(el);
+        }
+
+        getGroup(document.getElementsByClassName("group_info")[0]);
+		getListSelect('type_equipment','type_equipment');
+		getListSelect('mark_equipment','equipment');
+		getListSelect('group','group');
+		getListSelect('attachment','attachment');
+    </script>
+</body>
+</html>

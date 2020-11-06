@@ -1,0 +1,128 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Профиль</title>
+    <script src="js/vendor/string.format-1.0.packed.js"></script>
+    <script src="js/vendor/jquery.min.js"></script>
+	<script src="js/vendor/detect.js"></script>
+	<script src="js/vendor/datepicker.js"></script>
+	<script src="js/notify.js"></script>
+    <script src="js/client_socket.js?v=1.0"></script>
+	<!--[if IE]>
+		<script src="js/vendor/html5shiv.min.js"></script>
+	<![endif]-->
+    <link rel="stylesheet" href="css/style.css?v=2">
+	<link rel="stylesheet" href="css/sprites/sprites.css">
+	<script src="js/main.js?v=3.8"></script>
+	<script>
+        data = ajax('autch.php','');
+        if(data['error']){
+            alert(data['error']);
+            location.href = 'http://'+ location.hostname;
+        }else{
+            localStorage.user_role = data.role;
+            localStorage.user_login = data.login;
+            localStorage.user_group_id = data.group_id;
+            localStorage.user_access_group = data.access_group;
+            localStorage.user_fullname = data.fullname;
+        }
+    </script>
+	<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+    <div class="nav">
+        <div id="name"></div>
+        <input type="button" onclick="ajax('autch.php','type=out');localStorage.clear();location.href ='http://'+location.host;" value="Выйти">
+    </div>
+    <div class="content">
+        <div id="btnControl" class="btnControl"></div>
+        <form id="allShow" onsubmit="send(this); return false;" method="POST">
+        </form>
+        <div  class="form hideform" id="regform">
+            <form onsubmit="send(this); return false;" method="POST">
+                <div>
+                    <input type="text" name="login" placeholder="Логин"><br>
+                    <input type="password" name="password" placeholder="Пароль"><br>
+                    <input type="text" name="fullname" placeholder="ФИО"><br>
+                    <select name = "group" required>
+						<option disabled>Исполнитель</option>
+					</select><br>
+                    <textarea name="vgroup" id="vgroup" oninput='getList(this);' list = 'lvgroup' placeholder="Видимые исполнители, через запятую"></textarea>
+                    <div>
+                        <select id="lvgroup">
+                            <option disabled>Подсказка</option>
+                        </select>
+                    </div>
+                </div>
+                <label>Права доступа: <input type="number" value="1" name="role" min="1" max="4"></label>
+                <input type="hidden" name="type" value="register">
+                <button type="submit">Добавить</button>
+            </form>
+        </div>
+        <datalist id="lgroup"></datalist>
+        <datalist id="ltype_equipment"></datalist>
+        <datalist id="lattachment"></datalist>
+        <datalist id="lcontact"></datalist>
+		<datalist id="laddress"></datalist>
+		<datalist id="lgot"></datalist>
+        <div  id="showcontent">
+            <form method="POST" onsubmit="show(this); return false;" id="filterForm">
+                <div class="form" id="filter">
+                    <input type="text" name="series" list="lseries" onchange="getList(this);" placeholder="ID номер">
+                    <datalist id="lseries"></datalist>
+                    <select type="text" name="equipment" title="Оборудование">
+						<option disabled>Оборудование</option>
+						<option value="">Все</option>
+					</select>
+                    <datalist id="lequipment"></datalist>
+                    <select type="text" name="attachment" title="Заказчик">
+						<option disabled>Заказчик</option>
+						<option>Все</option>
+					</select>
+                    <input type="text" name="contact" list="lcontact" title="Контактное лицо" onkeypress="getList(this);" placeholder="Контактное лицо">
+                    <select id="status" name="status" title="Статус">
+                        <option disabled> Статус </option>
+                        <option value=""> Все </option>
+                    </select>
+                    <select id="typeDate"  name="typeDate" title="Дата выдачи">
+                        <option disabled> Выбор фильтра даты </option>
+                        <option value="4"> Дата выдачи </option>
+                    </select>
+                    <label for="stDate" style="display: inline;">Начало</label>
+                    <input type="date" name="stDate" id="stDate">
+                    <label for="endDate" style="display: inline;">Конец</label>
+                    <input type="date" name="endDate" id="endDate">
+                    <input type="hidden" name="type" value="show">
+                    <input type="submit" value="Показать">
+					<input type="reset" value="Очистить">
+					<div class="excel" title="Группировка в Excel" id="btnPrint" onclick="exportToXlsx('type=stats');"></div>
+					<div class="reestr" title="Создать реестр приема передачи" id="btnCreate" onclick="printForm();"></div>
+					<div class="volume_on" title="Звук уведомления включен" id="btnVolume"></div>
+                </div>
+            </form>
+            <div id="info" class="form">
+                <p>Всего: <span id="allCount">0</span></p>
+                <p>Показанно: <span id="showCount">0</span></p>
+                <p>Отдел: <span id="nameGroup"></span></p>
+            </div>
+            <div id="data"></div>
+            <div id="footerBtnControl">
+                <input type="button" id="next" onclick="next()" value="Еще">
+            </div>
+        </div>
+        <div id="message"></div>
+    </div>
+<script src="js/profile.js?v=4.5"></script>
+<script>
+	if(getBrowser().browser === "firefox" || getBrowser().browser == "ie"){
+		var stD = document.getElementById("stDate");
+		var enD = document.getElementById("endDate");
+		var isd = document.getElementById("issued");
+		var settings = { animation : "fade", language : "RU", format : "yyyy-mm-dd" };
+		Datepicker.bind(stD, settings);
+		Datepicker.bind(enD,settings);
+		Datepicker.bind(isd,settings);
+	}
+</script>
+</body>
+</html>
