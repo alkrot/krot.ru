@@ -49,7 +49,9 @@ class ExportFunctions {
             $colI = $col + 8;
             while($i <= 6){
                 PHPExport::SetCellValue($row,$colI,$val['mat'.$i]);
-                PHPExport::SetCellValue($row,$colI+1,$val['mat'.$i.'Count']);
+                if($val['mat'.$i.'Count'] > 0){
+                    PHPExport::SetCellValue($row,$colI+1,$val['mat'.$i.'Count']);
+                }
                 $i++;
                 $colI = $colI + 2;
             }
