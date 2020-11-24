@@ -59,7 +59,8 @@ var mass = allShow.querySelectorAll('select,input[type="date"],label,img[id="btn
 					'<br>Дата приема:' + getInp('receiving','','Дата приема','date'),
 					' Дата ремонта:' + getInp('repairs','','Дата ремонта','date'),																		
 					' Дата выдачи:' + getInp('issued','','Дата выдачи','date'),
-					getInp('req_id','','','hidden')
+					getInp('req_id','','','hidden'),
+					"<div class='reestr' id='act' title='Акт ремонта' id=btnPrint' onclick=\"exportTo('type=actR',this)\";></div>"
 				];
 	var div2 = document.createElement('div');
 	div2.innerHTML = field.join(' ');
@@ -113,23 +114,29 @@ document.getElementById('status').onchange = function(e){
 	localStorage.requestStatus = this.value;
 };
 
-// Экспорт в Excel ctrl+p
+// Экспорт ctrl+p
 document.onkeydown = function(e){
-	if(e.ctrlKey && e.keyCode == 80){
-		exportToXlsx("type=stats");
+	console.log(e.code);
+	if(e.ctrlKey && e.code === "KeyP"){
+		exportTo("type=stats");
         e.preventDefault();
 	}
 };
 
-//Экспорт в Excel
-function exportToXlsx(ext){
-	var frm = document.getElementById('filterForm');
-	var params = buildQueryString(formToObj(frm));
+//Экспорт
+function exportTo(ext,fc){
+	if(fc.parentNode.parentNode.id === "allShowDiv"){
+		var req_id = fc.parentNode.querySelector("input[name='req_id']").value;
+		var params = "id=" + req_id;
+	}else{
+		var frm = document.getElementById('filterForm');
+		var params = buildQueryString(formToObj(frm));
+	}
 	window.open('http://' + location.host + '/php/export.php?' + params + ((ext) ? ("&" +ext) : ''),"Экспорт");
 }
 
 function printForm() {
-    exportToXlsx("type=print");
+    exportTo("type=print");
 }
 
 //Добавление значения в доступные группы из подсказчика
