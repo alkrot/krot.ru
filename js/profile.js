@@ -125,9 +125,12 @@ document.onkeydown = function(e){
 
 //Экспорт
 function exportTo(ext,fc){
-	if(fc.parentNode.parentNode.id === "allShowDiv"){
-		var req_id = fc.parentNode.querySelector("input[name='req_id']").value;
-		var params = "id=" + req_id;
+	
+	if(fc){
+		if(fc.parentNode.parentNode.id === "allShowDiv"){
+			var req_id = fc.parentNode.querySelector("input[name='req_id']").value;
+			var params = "id=" + req_id;
+		}
 	}else{
 		var frm = document.getElementById('filterForm');
 		var params = buildQueryString(formToObj(frm));
