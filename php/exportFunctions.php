@@ -44,11 +44,22 @@ class ExportFunctions {
             PHPExport::SetCellValue($row,$col+5, $val['cause']);
             PHPExport::SetCellValue($row,$col+6, $val['got']);
             PHPExport::SetCellValue($row,$col+7, $val['note']);
+
+            $i = 1;
+            $colI = $col + 8;
+            while($i <= 6){
+                PHPExport::SetCellValue($row,$colI,$val['mat'.$i]);
+                if($val['mat'.$i.'Count'] > 0){
+                    PHPExport::SetCellValue($row,$colI+1,$val['mat'.$i.'Count']);
+                }
+                $i++;
+                $colI = $colI + 2;
+            }
             
             $row++;
         }
 
-        $range = "A3:W".($row-1);
+        $range = "A3:T".($row-1);
         PHPExport::SetTables($range);
         
         PHPExport::Save();

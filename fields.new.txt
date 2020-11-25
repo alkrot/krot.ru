@@ -1,0 +1,12 @@
+ALTER TABLE list ADD mat1 VARCHAR(250);
+ALTER TABLE list ADD mat1Count int(11) not null;
+ALTER TABLE list ADD mat2 VARCHAR(250);
+ALTER TABLE list ADD mat2Count int(11) not null;
+ALTER TABLE list ADD mat3 VARCHAR(250);
+ALTER TABLE list ADD mat3Count int(11) not null;
+ALTER TABLE list ADD mat4 VARCHAR(250);
+ALTER TABLE list ADD mat4Count int(11) not null;
+ALTER TABLE list ADD mat5 VARCHAR(250);
+ALTER TABLE list ADD mat5Count int(11) not null;
+ALTER TABLE list ADD mat6 VARCHAR(250);
+ALTER TABLE list ADD mat6Count int(11) not null;

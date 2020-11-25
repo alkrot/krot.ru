@@ -41,9 +41,24 @@ var mass = allShow.querySelectorAll('select,input[type="date"],label,img[id="btn
 					getSelection('group','text','Исполнитель'),
 					getInp('got','lgot','Произвел ремонт'),
 					getText('note','Примечание'),
+					'<div id="materials">',
+					'<sup><b>Материалы затраченные</b></sup><br>',
+					getInp("mat1",'','Наименование 1'),
+					getInp("mat1Count",'','Количество','number') + '<br>',
+					getInp("mat2",'','Наименование 2'),
+					getInp("mat2Count",'','Количество','number') + '<br>',
+					getInp("mat3",'','Наименование 3'),
+					getInp("mat3Count",'','Количество','number') + '<br>',
+					getInp("mat4",'','Наименование 4'),
+					getInp("mat4Count",'','Количество','number') + '<br>',
+					getInp("mat5",'','Наименование 5'),
+					getInp("mat5Count",'','Количество','number') + '<br>',
+					getInp("mat6",'','Наименование 6'),
+					getInp("mat6Count",'','Количество','number'),
+					'</div>',
 					'<br>Дата приема:' + getInp('receiving','','Дата приема','date'),
-					'<br>Дата ремонта:' + getInp('repairs','','Дата ремонта','date'),																		
-					'<br>Дата выдачи:' + getInp('issued','','Дата выдачи','date'),
+					' Дата ремонта:' + getInp('repairs','','Дата ремонта','date'),																		
+					' Дата выдачи:' + getInp('issued','','Дата выдачи','date'),
 					getInp('req_id','','','hidden')
 				];
 	var div2 = document.createElement('div');
@@ -288,7 +303,11 @@ function showForm(el,type){
 				document.getElementsByName('req_id')[0].value = el_look_id;
 				document.getElementsByName('issued')[0].value = data.items[0].issued.split(' ')[0];
 				document.getElementsByName('repairs')[0].value = data.items[0].repairs.split(' ')[0];
-				document.getElementsByName('receiving')[0].value = data.items[0].receiving.split(' ')[0];																											
+				document.getElementsByName('receiving')[0].value = data.items[0].receiving.split(' ')[0];	
+				SetValue(data,['mat1','mat2','mat3',
+							'mat4','mat5','mat6',
+							'mat1Count','mat2Count','mat3Count',
+							'mat4Count','mat5Count','mat6Count']);																															
 			}
 		});
 		replceForm('Изменить','update');
@@ -301,6 +320,26 @@ function showForm(el,type){
 	
 	document.getElementById('allShow').style.opacity = '1';
 	document.getElementById('allShow').style.zIndex = '1000';
+}
+
+/**
+ * Установить значение для перданных полей
+ * @param {Полученые данные} data 
+ * @param {Поля} params 
+ */
+function SetValue(data,params){
+	for(var p in params){
+		var name = params[p];
+		var elem = document.getElementsByName(name)[0];
+		var elemVal =  data.items[0][name];
+		if(elem.getAttribute('type') == "number"){
+			if(elemVal > 0){
+				elem.value = elemVal
+			}
+		}else{
+			elem.value = elemVal;
+		}
+	}
 }
 
 //Измение типа формы изменения или добавление заявки

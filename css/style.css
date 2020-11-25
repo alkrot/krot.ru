@@ -62,6 +62,18 @@ strong {
     margin: 5px auto;
 }
 
+div#materials input {
+    display: inline;
+}
+
+div#materials input[type="number"]{
+    width: 3em;
+}
+
+#allShow input[type="date"] {
+    display: inline;
+}
+
 input[type="button"] {
     border: none;
 }

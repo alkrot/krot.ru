@@ -42,7 +42,10 @@
 		else $query = '';
 		$count = $db->getRow("SELECT COUNT(*) AS count FROM list ?p",$query);
 		$data = $db->getAll("SELECT `list`.id,`list`.status_id,`series`,`mark_equipment`.name as equipment,`list`.`equipment` as equipment_id,`type_equipment`.name as type_equipment,`list`.tEquipmentId, `attachment`.name AS attachment_name, `attachment`.id AS attachment_id, `address`, `contact`,
-		`group`.name AS group_name,`group`.id AS group_id,`got`,`note`, `status`,`receipt`,`receiving`,`repairs`,`issued`,`seal`,`cause` FROM `list` 
+		`group`.name AS group_name,`group`.id AS group_id,`got`,`note`, `status`,`receipt`,`receiving`,`repairs`,`issued`,`seal`,`cause`, 
+		`mat1`,`mat2`,`mat3`,`mat4`,`mat5`,`mat6`,
+		`mat1Count`,`mat2Count`,`mat3Count`,`mat4Count`,`mat5Count`,`mat6Count`
+		FROM `list` 
 		LEFT JOIN `group` ON `group`.id = `list`.group_id  
 		LEFT JOIN `attachment` ON `attachment`.id = `list`.attachment_id 
 		LEFT JOIN `liststatus` ON `list`.status_id = `liststatus`.id
@@ -98,8 +101,18 @@
 	//Формирование полей для sql запроса на вставку
 	function getData($post,$role){
 		global $db;
+
 		$field = array('series','equipment','address','contact','got','note','repairs','receiving','issued','cause');
+		$matName = array('mat1','mat2','mat3','mat4','mat5','mat6');
+		$field = array_merge($field, $matName);
+
 		$data = $db->filterArray($post,$field);
+
+		foreach ($matName as $mat) {
+			$matNameCount = $mat.'Count';
+			$data[$matNameCount] = intval($post[$matNameCount]);
+		}
+
 		if($_POST['status'] !== Null && intval($_POST['status']) > 0)$data['status_id'] = intval($_POST['status']);
 		$data['attachment_id'] = intval($post['attachment']);
 		$data['seal'] = ($post['seal']) ? true : false;
@@ -110,7 +123,7 @@
 		return $data;
 	}
 	
-	//Для возращение id по полю
+	//Для возвращение id по полю
 	function getId($table,$filed,$val){
 		global $db;
 		$data = $db->getRow("SELECT * FROM ?n WHERE ?n = ?s",$table,$filed,$val);
