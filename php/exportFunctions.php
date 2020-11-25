@@ -36,7 +36,6 @@ class ExportFunctions {
         foreach($res as $val){
             $receiving = formatToEx2($val['receiving']);
             $repairs = formatToEx2($val['repairs']);
-            
             if($receiving != null) ExcelExport::SetCellValueDate($row,$col,$receiving);	
             if($repairs != null) ExcelExport::SetCellValueDate($row, $col+1,$repairs);
             ExcelExport::SetCellValue($row,$col+2, $val['attachment_name']);
@@ -61,6 +60,7 @@ class ExportFunctions {
         }
 
         $range = "A3:T".($row-1);
+
         ExcelExport::SetTables($range);
         
         ExcelExport::Save();
@@ -92,6 +92,9 @@ class ExportFunctions {
         ExcelExport::Save();
     }
 
+    /**
+     * Экспорт Акт ремонта передачи
+     */
     public function ExportActR(){
         WordExport::ReadTemplate("actR");
         $res = getTable($this->get,$count,0,1);
@@ -110,6 +113,10 @@ class ExportFunctions {
         WordExport::Save();
     }
 
+    /**
+     * экспорт реестра
+     * @param int $role роль
+     */
     public function ExportReport($role){
         $res = getTable($this->get,$count);
         $res = getTable($this->get,$count,0,$count["count"]);
@@ -164,6 +171,9 @@ class ExportFunctions {
         $writer->writeToStdOut();
     }
 
+    /**
+     * Экспорт печатного акта
+     */
     public function ExportPrint(){
         $res = getTable($this->get,$count);
         $res = getTable($this->get,$count,0,$count["count"]);
