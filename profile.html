@@ -11,8 +11,8 @@
 	<!--[if IE]>
 		<script src="js/vendor/html5shiv.min.js"></script>
 	<![endif]-->
-    <link rel="stylesheet" href="css/style.css?v=2.3">
-	<link rel="stylesheet" href="css/sprites/sprites.css">
+    <link rel="stylesheet" href="css/style.css?v=2.4">
+	<link rel="stylesheet" href="css/sprites/sprites.css?v=1.0">
 	<script src="js/main.js?v=3.8"></script>
 	<script>
         data = ajax('autch.php','');
@@ -95,7 +95,7 @@
                     <input type="hidden" name="type" value="show">
                     <input type="submit" value="Показать">
 					<input type="reset" value="Очистить">
-					<div class="excel" title="Группировка в Excel" id="btnPrint" onclick="exportToXlsx('type=stats');"></div>
+					<div class="excel" title="Группировка в Excel" id="btnPrint" onclick="exportTo('type=stats');"></div>
 					<div class="reestr" title="Создать реестр приема передачи" id="btnCreate" onclick="printForm();"></div>
 					<div class="volume_on" title="Звук уведомления включен" id="btnVolume"></div>
                 </div>
@@ -112,7 +112,11 @@
         </div>
         <div id="message"></div>
     </div>
+<<<<<<< HEAD
+<script src="js/profile.js?v=4.7"></script>
+=======
 <script src="js/profile.js?v=4.6"></script>
+>>>>>>> d49bf4de026ba18c27d05762ad00c927f79cc78a
 <script>
 	if(getBrowser().browser === "firefox" || getBrowser().browser == "ie"){
 		var stD = document.getElementById("stDate");

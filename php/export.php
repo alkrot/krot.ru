@@ -24,6 +24,9 @@
 		case "stats":
 			$exFunctions->ExportStats();
 		break;
+		case 'actR':
+			$exFunctions->ExportActR();
+			break;
 		default:
 			$exFunctions->ExportReport($role);
 	}

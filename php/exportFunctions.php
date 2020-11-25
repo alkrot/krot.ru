@@ -2,8 +2,9 @@
 
 require_once 'config.php';
 require_once 'func.php';
-require_once "excel/PHPExport.php";
+require_once "excel/ExcelExport.php";
 require_once 'excel/XLSXWriter.php';
+require_once 'word/WordExport.php';
 date_default_timezone_set('Etc/GMT-3');
 
 /**
@@ -25,7 +26,7 @@ class ExportFunctions {
      */
     public function ExportStats()
     {
-        PHPExport::ReadTemplate("stats");
+        ExcelExport::ReadTemplate("stats");
         $res = getTable($this->get,$count);
         $res = getTable($this->get,$count,0,$count["count"]);
         
@@ -35,22 +36,21 @@ class ExportFunctions {
         foreach($res as $val){
             $receiving = formatToEx2($val['receiving']);
             $repairs = formatToEx2($val['repairs']);
-            
-            if($receiving != null) PHPExport::SetCellValueDate($row,$col,$receiving);	
-            if($repairs != null) PHPExport::SetCellValueDate($row, $col+1,$repairs);
-            PHPExport::SetCellValue($row,$col+2, $val['attachment_name']);
-            PHPExport::SetCellValue($row,$col+3, $val['equipment']);
-            PHPExport::SetCellValue($row,$col+4, $val['series']);
-            PHPExport::SetCellValue($row,$col+5, $val['cause']);
-            PHPExport::SetCellValue($row,$col+6, $val['got']);
-            PHPExport::SetCellValue($row,$col+7, $val['note']);
+            if($receiving != null) ExcelExport::SetCellValueDate($row,$col,$receiving);	
+            if($repairs != null) ExcelExport::SetCellValueDate($row, $col+1,$repairs);
+            ExcelExport::SetCellValue($row,$col+2, $val['attachment_name']);
+            ExcelExport::SetCellValue($row,$col+3, $val['equipment']);
+            ExcelExport::SetCellValue($row,$col+4, $val['series']);
+            ExcelExport::SetCellValue($row,$col+5, $val['cause']);
+            ExcelExport::SetCellValue($row,$col+6, $val['got']);
+            ExcelExport::SetCellValue($row,$col+7, $val['note']);
 
             $i = 1;
             $colI = $col + 8;
             while($i <= 6){
-                PHPExport::SetCellValue($row,$colI,$val['mat'.$i]);
+                ExcelExport::SetCellValue($row,$colI,$val['mat'.$i]);
                 if($val['mat'.$i.'Count'] > 0){
-                    PHPExport::SetCellValue($row,$colI+1,$val['mat'.$i.'Count']);
+                    ExcelExport::SetCellValue($row,$colI+1,$val['mat'.$i.'Count']);
                 }
                 $i++;
                 $colI = $colI + 2;
@@ -60,16 +60,17 @@ class ExportFunctions {
         }
 
         $range = "A3:T".($row-1);
-        PHPExport::SetTables($range);
+
+        ExcelExport::SetTables($range);
         
-        PHPExport::Save();
+        ExcelExport::Save();
     }
 
     /**
      * Акт
      */
     public function ExportAct(){
-        PHPExport::ReadTemplate("act");
+        ExcelExport::ReadTemplate("act");
         $res = getTable($this->get,$count,0,1);
         $val = $res[0];
         $type_equipment = $val["type_equipment"];
@@ -82,16 +83,40 @@ class ExportFunctions {
         $col = 1;
         $row = 4;
 
-        PHPExport::SetCellValue($row,$col,$name);
+        ExcelExport::SetCellValue($row,$col,$name);
 
         $row = 23;
         $col = 4;
-        PHPExport::SetCellValue($row,$col,$cause);
+        ExcelExport::SetCellValue($row,$col,$cause);
 
-        PHPExport::Save();
+        ExcelExport::Save();
     }
 
+    /**
+     * Экспорт Акт ремонта передачи
+     */
+    public function ExportActR(){
+        WordExport::ReadTemplate("actR");
+        $res = getTable($this->get,$count,0,1);
+        $val = $res[0];
+        $seal = $val['seal'] > 0 ? "Да" : "Нет";
 
+        WordExport::FindReplace(
+            array('attachment_name'=>$val["attachment_name"],
+                    'type_equipment'=> $val["type_equipment"],
+                    'equipment'=> $val['equipment'],
+                    'series'=>$val['series'],
+                    'cause'=>$val['cause'],
+                    'seal' => $seal,
+                    'note'=> $val['note'])
+        );
+        WordExport::Save();
+    }
+
+    /**
+     * экспорт реестра
+     * @param int $role роль
+     */
     public function ExportReport($role){
         $res = getTable($this->get,$count);
         $res = getTable($this->get,$count,0,$count["count"]);
@@ -146,6 +171,9 @@ class ExportFunctions {
         $writer->writeToStdOut();
     }
 
+    /**
+     * Экспорт печатного акта
+     */
     public function ExportPrint(){
         $res = getTable($this->get,$count);
         $res = getTable($this->get,$count,0,$count["count"]);

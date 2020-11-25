@@ -7,7 +7,7 @@
 		* Вспомогательный класс экспорта, 
 		*для обобщения функций используемых для работы с эксель
 	*/
-	class PHPExport {
+	class ExcelExport {
 		
 		/**
 		 	* Объект эксель
@@ -30,7 +30,7 @@
 		*/
 		public static function ReadTemplate($nameTemplate){
 			self::$xls = PHPExcel_IOFactory::load(__DIR__ . '/templates/'.$nameTemplate.'.xlsx');
-			PHPExport::ChoiseSheet(null);
+			ExcelExport::ChoiseSheet(null);
 			self::$nameTemplate = $nameTemplate;
 		}
 		
