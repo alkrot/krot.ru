@@ -1,8 +1,12 @@
 <?
-	require_once __DIR__ . '/Classes/PHPExcel.php';
-	require_once __DIR__ . '/Classes/PHPExcel/Writer/Excel2007.php';
-	require_once __DIR__ . '/Classes/PHPExcel/IOFactory.php';	
-	
+	require_once __DIR__.'/Spreadsheet/vendor/autoload.php';
+	use \PhpOffice\PhpSpreadsheet\Spreadsheet;
+	use \PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+	use \PhpOffice\PhpSpreadsheet\IOFactory;
+	use \PhpOffice\PhpSpreadsheet\Style\Border;
+	use \PhpOffice\PhpSpreadsheet\Shared\Date;
+	use \PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+
 	/**
 		* Вспомогательный класс экспорта, 
 		*для обобщения функций используемых для работы с эксель
@@ -29,7 +33,7 @@
 			* @param string $nameTemplate название шаблона
 		*/
 		public static function ReadTemplate($nameTemplate){
-			self::$xls = PHPExcel_IOFactory::load(__DIR__ . '/templates/'.$nameTemplate.'.xlsx');
+			self::$xls = IOFactory::load(__DIR__ . '/templates/'.$nameTemplate.'.xlsx');
 			ExcelExport::ChoiseSheet(null);
 			self::$nameTemplate = $nameTemplate;
 		}
@@ -51,8 +55,8 @@
 		public static function SetTables($range){
 			$border = array(
 				'borders'=>array(
-					'allborders' => array(
-						'style' => PHPExcel_Style_Border::BORDER_THIN,
+					'allBorders' => array(
+						'borderStyle' => Border::BORDER_THIN,
 						'color' => array('rgb' => '000000')
 					)
 				)
@@ -79,11 +83,9 @@
 			* @param mixed $val - значение
 		*/
 		public static function SetCellValueDate($row, $col, $val){
-			$val = PHPExcel_Shared_Date::PHPToExcel($val);
+			self::$sheet->getStyleByColumnAndRow($col,$row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_DDMMYYYY);
 			$cell = self::$sheet->getCellByColumnAndRow($col,$row);
 			$cell->setValue($val);
-			
-			self::$sheet->getStyleByColumnAndRow($col,$row)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_DATE_YYYYMMDD2);
 		}
 		
 		/**
@@ -107,7 +109,7 @@
 			header("Content-type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 			header("Content-Disposition: attachment; filename=".self::$nameTemplate.".xlsx");
 			 
-			$objWriter = new PHPExcel_Writer_Excel2007(self::$xls);
+			$objWriter = IOFactory::createWriter(self::$xls,"Xlsx");
 			$objWriter->save('php://output'); 
 			exit();
 		}
