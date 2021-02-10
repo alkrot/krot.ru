@@ -160,7 +160,7 @@
 	function formatToEx2($indate){
 		if($indate == '0000-00-00 00:00:00') return;
 		$date = new DateTime($indate);
-		$res = $date->format('Y-m-d');
+		$res = $date->format('d.m.Y');
 		return $res;
 	}
 	
